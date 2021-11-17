@@ -4,20 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".Activity_log">
 
     <TextView
-        android:id="@+id/tvLog"
+        android:id="@+id/auth"
         android:layout_width="165dp"
         android:layout_height="40dp"
-        android:text="Авторизация"
         android:textSize="24sp"
+        android:text="@string/auth"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.406"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.195" />
+        app:layout_constraintVertical_bias="0.196" />
 
     <EditText
         android:id="@+id/password"
@@ -29,11 +28,14 @@
         android:layout_marginBottom="74dp"
         android:ems="10"
         android:inputType="textPassword"
-        app:layout_constraintBottom_toTopOf="@+id/login_button"
+        android:minHeight="48dp"
+        android:text="@string/password"
+        app:layout_constraintBottom_toTopOf="@+id/enter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/login" />
+        app:layout_constraintTop_toBottomOf="@+id/login"
+        tools:ignore="SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
 
     <EditText
         android:id="@+id/login"
@@ -44,20 +46,21 @@
         android:layout_marginEnd="101dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Логин"
+        android:minHeight="48dp"
+        android:text="@string/login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/login_button"
+        android:id="@+id/enter"
+        android:text="@string/enter"
         android:layout_width="121dp"
         android:layout_height="65dp"
         android:layout_marginStart="145dp"
         android:layout_marginTop="97dp"
         android:layout_marginEnd="145dp"
-        android:text="Button"
         app:iconTint="#2196F3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

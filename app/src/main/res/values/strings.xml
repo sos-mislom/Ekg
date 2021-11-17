@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Ekg</string>
+    <string name="login">Логин</string>
+    <string name="password"> </string>
+    <string name="enter">Войти</string>
+    <string name="auth">Авторизация</string>
 </resources>
