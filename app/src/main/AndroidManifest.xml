@@ -15,8 +15,10 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <activity
-            android:name=".Activity_after_log"
-            android:exported="false" />
+            android:name=".activity_after_log2"
+            android:exported="false"
+            android:label="@string/title_activity_after_log2"
+            android:theme="@style/Theme.MyApplication.NoActionBar" />
         <activity
             android:name=".Activity_log"
             android:exported="true">
