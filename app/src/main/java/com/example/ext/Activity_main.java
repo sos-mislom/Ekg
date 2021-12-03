@@ -39,8 +39,8 @@ public class Activity_main extends AppCompatActivity {
     @SuppressLint("NonConstantResourceId")
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.nav_home:{
-                Intent mainIntent = new Intent(this, Home.class);
+            case R.id.nav_main:{
+                Intent mainIntent = new Intent(this, Activity_main.class);
                 startActivity(mainIntent);
                 break;
             }
@@ -57,7 +57,6 @@ public class Activity_main extends AppCompatActivity {
             case R.id.nav_messages:{
                 Intent mainIntent = new Intent(this, Messages.class);
                 startActivity(mainIntent);
-                finish();
                 break;
             }
         }
