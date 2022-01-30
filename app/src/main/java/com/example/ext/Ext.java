@@ -1,7 +1,6 @@
 package com.example.ext;
 // #2196F3
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,8 +22,8 @@ public class Ext {
     private String userId;
     private String studentId;
     private String uchYear;
-    private static Map<Integer, String> sbj_names;
-    private static Map<Integer, String> teachers;
+    public static Map<Integer, String> sbj_names;
+    public static Map<Integer, String> teachers;
     private Post p;
     private String uchId;
     private String cls;
@@ -42,8 +41,8 @@ public class Ext {
             AUTH();
             GET_USER_DATA();
             UCH_YEAR();
-            GET_NESSESERY_DICTS();
             GET_STUDENT_CLASS();
+            GET_NESSESERY_DICTS();
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
@@ -51,6 +50,7 @@ public class Ext {
 
 
     }
+    public boolean isAlpha(String name) {    return name.matches("[a-zA-Z]+");}
 
     private static String PasswordToSHA1(String passwordToHash) throws NoSuchAlgorithmException {
         MessageDigest message_dig = MessageDigest.getInstance("SHA-1");
@@ -75,10 +75,22 @@ public class Ext {
     private JSONArray RET_JSON_FORMAT(Response r){
         String data = r.toString().replaceAll("new Date\\((([0-9]+,?-?)+)\\)", "[$1]");
         try {
-            data.replace("\n", "").replace("\r", "");
+            boolean is_open = false;
+            data = data.replace("\n", "").replace("\r", "").replace("\t", "");
+            for (int i = 0; i < data.length()-1; i++) {
+                if (data.charAt(i) == '"' && !is_open){
+                    is_open = true;
+                }
+                else if (data.charAt(i+1) == ',' && data.charAt(i) == '"' && (!isAlpha(String.valueOf(data.charAt(i+3))) || data.charAt(i+3) == 'n')){is_open = false;}
+                else if (is_open && data.charAt(i) == '"'){
+                    data = data.substring(0, i++) + "$" + data.substring(i);
+                }
+            }
+            data = data.replace("\\", "");
             return new JSONArray(data);
         } catch (JSONException e) {
             e.printStackTrace();
+
         } return null;
     }
     public void UCH_YEAR() {
@@ -89,7 +101,6 @@ public class Ext {
             Response r = p.post ( this.url + "act/get_uch_year", data);
             if (r == null) this.uchYear = null;
             JSONArray arr = new JSONArray(r.toString());
-            Log.e("UCH_YEAR", arr.toString());
             this.uchYear = arr.getJSONArray(0).getString(0);
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -102,7 +113,7 @@ public class Ext {
         data.put("p", this.password);
         try {
             Response r = p.post(this.url + "login", data);
-            if (r == null) return new JSONArray("{'error': 'Неправильный логин и/или пароль.'}");
+            if (r == null) return new JSONObject("{'error': 'Неправильный логин и/или пароль.'}");
             JSONArray arr = new JSONArray(r.toString());
             this.userId = arr.getJSONArray(0).getString(0);
             this.studentId = arr.getJSONArray(0).getString(6);
@@ -199,9 +210,21 @@ public class Ext {
         }
         return null;
     }
+    public JSONArray GET_STUDENT_GROUPS() {
+        Map<String, String> data = new HashMap<>();
+        data.put("cls", this.cls);
+        data.put("student", this.studentId);
+        try {
+            Response r = p.post ( this.url + "act/GET_STUDENT_GROUPS", data);
+            return new JSONArray(r.toString());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public void GET_NESSESERY_DICTS() throws IOException, JSONException {
         Map<String, String> data = new HashMap<>();
-        Map<Integer, String> edu = new Hashtable();
+        Hashtable edu = new Hashtable();
         data.put("cls", this.cls);
         data.put("parallelClasses", "");
         Response r = p.post ( this.url + "act/GET_DAIRY_CLASS_SUBJECTS", data);
@@ -210,6 +233,8 @@ public class Ext {
             edu.put(arr.getJSONArray(i).getInt(0), arr.getJSONArray(i).getString(1));
         }
         this.sbj_names = edu;
+
+        edu = new Hashtable();
         edu.clear();
         Response g = p.get ( this.url + "act/GET_SUBS_PERSONS_STORE_DATA");
         JSONArray ar = new JSONArray(g.toString());
@@ -217,6 +242,7 @@ public class Ext {
             edu.put(ar.getJSONArray(i).getInt(0), ar.getJSONArray(i).getString(1));
         }
         this.teachers = edu;
+        edu = new Hashtable();
         edu.clear();
         Response g2 = p.get ( this.url + "act/GET_PERIODS");
         JSONArray a = new JSONArray(g2.toString());
@@ -224,6 +250,5 @@ public class Ext {
             edu.put(a.getJSONArray(i).getInt(0), a.getJSONArray(i).getString(1));
         }
         this.work_pheriods = edu;
-        Log.e("d", this.work_pheriods.toString());
     }
 }
