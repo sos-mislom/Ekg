@@ -1,7 +1,6 @@
 package com.example.ext;
 
 
-
 import android.util.Log;
 
 import org.json.JSONObject;

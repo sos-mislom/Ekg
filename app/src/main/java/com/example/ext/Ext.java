@@ -1,5 +1,6 @@
 package com.example.ext;
 // #2196F3
+
 import android.annotation.SuppressLint;
 
 import org.json.JSONArray;
@@ -50,7 +51,7 @@ public class Ext {
 
 
     }
-    public boolean isAlpha(String name) {    return name.matches("[a-zA-Z]+");}
+    public boolean isAlpha(String name) {return name.matches("[a-zA-ZА-Яа-я]+");}
 
     private static String PasswordToSHA1(String passwordToHash) throws NoSuchAlgorithmException {
         MessageDigest message_dig = MessageDigest.getInstance("SHA-1");
@@ -76,19 +77,21 @@ public class Ext {
         String data = r.toString().replaceAll("new Date\\((([0-9]+,?-?)+)\\)", "[$1]");
         try {
             boolean is_open = false;
-            data = data.replace("\n", "").replace("\r", "").replace("\t", "");
-            for (int i = 0; i < data.length()-1; i++) {
+            data = data.replace("\\n", "").replace("\r", "").replace("\t", "");
+            for (int i = 0; i < data.length()-3; i++) {
                 if (data.charAt(i) == '"' && !is_open){
                     is_open = true;
                 }
-                else if (data.charAt(i+1) == ',' && data.charAt(i) == '"' && (!isAlpha(String.valueOf(data.charAt(i+3))) || data.charAt(i+3) == 'n')){is_open = false;}
-                else if (is_open && data.charAt(i) == '"'){
+                else if (data.charAt(i+1) == ',' && data.charAt(i) == '"' || (!isAlpha(String.valueOf(data.charAt(i+3))) && data.charAt(i+3) == 'n')){
+                    is_open = false;
+                }
+                else if (is_open && data.charAt(i) == '"' && !(data.charAt(i) == '"' && data.charAt(i+1) == '"')){
                     data = data.substring(0, i++) + "$" + data.substring(i);
                 }
             }
-            data = data.replace("\\", "");
+            data = data.replace("\n", "");
             return new JSONArray(data);
-        } catch (JSONException e) {
+        } catch (JSONException | StringIndexOutOfBoundsException e) {
             e.printStackTrace();
 
         } return null;

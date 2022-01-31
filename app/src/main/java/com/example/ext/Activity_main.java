@@ -31,9 +31,11 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 public class Activity_main extends AppCompatActivity {
     NavigationView navigationView;
@@ -101,13 +103,21 @@ public class Activity_main extends AppCompatActivity {
                 LocalDate end_dt = begin_dt.plusDays(5);
                 try {
                     Ext ext = new Ext("Зайцев","3MA8|ZJQ{0");
+                    //Ext ext = new Ext("Зайцева","<Cb0@4F9Sx");
+                    //Ext ext = new Ext("Кудряшов","Ob7]NDz79+");
                     JSONArray dairyData = ext.GET_STUDENT_DAIRY(begin_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), end_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                     JSONArray studentGroups = ext.GET_STUDENT_GROUPS();
-                    Map<String, ArrayList> whereIsLesson = new Hashtable();
+                    Map<String, ArrayList> whereIsLesson = new TreeMap();
                     boolean curInGroup;
                     for (int k = 0; k < dairyData.length(); k++) {
                         curInGroup = true;
-                        String Date = dairyData.getJSONArray(k).getJSONArray(0).get(2)+ "." + dairyData.getJSONArray(k).getJSONArray(0).get(1)+1 + "." + dairyData.getJSONArray(k).getJSONArray(0).get(0);
+
+                        String day = String.valueOf(dairyData.getJSONArray(k).getJSONArray(0).get(2));
+                        String month = String.valueOf((Integer.parseInt(String.valueOf(dairyData.getJSONArray(k).getJSONArray(0).get(1)))+1));
+                        if (day.length() == 1){ day = "0"+ day; }
+                        if (month.length() == 1){ month = "0"+ month; }
+
+                        String Date = day + "." + month + "." + dairyData.getJSONArray(k).getJSONArray(0).get(0);
                         for (int n = 0; n < studentGroups.length(); n++) {
                             if (studentGroups.getJSONArray(n).get(1).equals(dairyData.getJSONArray(k).get(2)) && studentGroups.getJSONArray(n).get(2).equals(dairyData.getJSONArray(k).get(6))){
                                 curInGroup = false;
@@ -146,12 +156,27 @@ public class Activity_main extends AppCompatActivity {
             return GetContentForActivityMain();
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @SuppressLint("ResourceAsColor")
         @Override
         protected void onPostExecute(Map<String, ArrayList> result) {
             super.onPostExecute(result);
             tblayoutl = (TableLayout) findViewById(R.id.tblayout);
-            for (String date: result.keySet()) {
+            List<String> keys = new ArrayList<String>(result.keySet());
+            List<LocalDate> keys_format_date = new ArrayList<>();
+            for (int i = 0; i < keys.size(); i++) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    keys_format_date.add(LocalDate.parse(keys.get(i), DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                }
+            }
+            Collections.sort(keys_format_date);
+            keys = new ArrayList<String>();
+            for (int i = 0; i < keys_format_date.size(); i++) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    keys.add(keys_format_date.get(i).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                }
+            }
+            for (String date: keys) {
                 row_of_date = new TableRow(Activity_main.this);
                 TextView textView = new TextView(Activity_main.this);
                 textView.setText(date);
@@ -164,14 +189,14 @@ public class Activity_main extends AppCompatActivity {
                 for (int i = 0; i < array.size(); i++) {
                     row_of_subj = new TableLayout(Activity_main.this);
                     textView1 = new TextView(Activity_main.this);
-                    textView1.setText(j + " " + array.get(i).get(0).replace('$', '"'));
+                    textView1.setText(j + ". " + array.get(i).get(0).replace('$', '"'));
                     textView1.setTypeface(null, Typeface.BOLD);
                     textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP,30);
                     textView1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
 
                     textView2 = new TextView(Activity_main.this);
                     textView2.setVisibility(View.GONE);
-                    textView2.setText(array.get(i).get(2));
+                    textView2.setText(array.get(i).get(2).replace('$', '"'));
                     textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP,25);
                     textView2.setPadding(10, 0, 10, 0);
                     textView2.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
