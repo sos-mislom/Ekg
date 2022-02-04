@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="five">#4CAF50</color>
+    <color name="four">#FFEB3B</color>
+    <color name="tree">#FF9800</color>
+    <color name="two">#FF5722</color>
+    <color name="text">#F44336</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>

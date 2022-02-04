@@ -1,8 +1,6 @@
 package com.example.ext;
 
 
-import android.util.Log;
-
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -70,7 +68,7 @@ class Response {
     public Response(String string, int statusCode) {
         this.string = string;
         this.statusCode = statusCode;
-        Log.e("REQ", string);
+        //Log.e("REQ", string);
     }
 
     public JSONObject json(){
