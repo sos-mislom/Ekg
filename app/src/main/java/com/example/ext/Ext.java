@@ -2,6 +2,7 @@ package com.example.ext;
 // #2196F3
 
 import android.annotation.SuppressLint;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,10 +12,16 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.TreeMap;
+
+import kotlin.Pair;
 
 public class Ext {
     private final String username;
@@ -51,7 +58,65 @@ public class Ext {
 
 
     }
+
     public boolean isAlpha(String name) {return name.matches("[a-zA-ZА-Яа-я]+");}
+
+    private String RepeatStr(int i, String str) {
+        String result = "";
+        for( int u = 0; u < i; u++ ) {
+            result = result + str;
+        }
+        return result;
+    }
+
+    public Pair<LocalDate, LocalDate> GET_INTERVAL(){
+        try {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            JSONArray list_of_periods_dates = this.GET_JOURNAL_PERIODS_INFO();
+            JSONArray CLASS_PER_SP = this.GET_CLASS_PER_SP();
+            ArrayList<Integer> list_of_periods = new ArrayList<>();
+            Map<Integer, Pair<LocalDate, LocalDate>> list_of_intervals = new TreeMap();
+            LocalDate now = LocalDate.now();
+            for (int i = 0; i < CLASS_PER_SP.length(); i++) {
+                    list_of_periods.add(CLASS_PER_SP.getJSONArray(i).getInt(0));
+            }
+            for (int i = 0; i < list_of_periods_dates.length(); i++) {
+                if(list_of_periods.contains(list_of_periods_dates.getJSONArray(i).getInt(0)));
+                LocalDate date = LocalDate.parse(GET_DATE(list_of_periods_dates.getJSONArray(i).getJSONArray(1)), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+                LocalDate date2 = LocalDate.parse(GET_DATE(list_of_periods_dates.getJSONArray(i).getJSONArray(2)), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+                Pair<LocalDate, LocalDate> pair = new Pair<>(date, date2);
+                list_of_intervals.put(list_of_periods_dates.getJSONArray(i).getInt(0), pair);
+            }
+            for (int index : list_of_intervals.keySet()) {
+                if (index != 360004){
+                    LocalDate t1start = list_of_intervals.get(index).component1();
+                    LocalDate t1end = list_of_intervals.get(index).component2();
+                    if (now.isAfter(t1start) && now.isBefore(t1end)){
+                        return list_of_intervals.get(index);
+                    }
+                }
+            }
+        }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String GET_DATE(JSONArray data){
+        String day = null;
+        try {
+            day = String.valueOf(data.get(2));
+            String month = String.valueOf((Integer.parseInt(String.valueOf(data.get(1)))+1));
+            if (day.length() == 1){ day = "0"+ day; }
+            if (month.length() == 1){ month = "0"+ month; }
+            String Date = day + "." + month + "." + data.get(0);
+            return Date;
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return day;
+    }
 
     private static String PasswordToSHA1(String passwordToHash) throws NoSuchAlgorithmException {
         MessageDigest message_dig = MessageDigest.getInstance("SHA-1");
@@ -140,6 +205,36 @@ public class Ext {
         data.put("isGuru", "false");
         try {
             Response r = p.post ( this.url + "act/GET_STUDENT_MESSAGES", data);
+            return RET_JSON_FORMAT(r);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public JSONArray GET_JOURNAL_PERIODS_INFO(){
+        Map<String, String> data = new HashMap<>();
+        data.put("uchYear", this.uchYear);
+        ArrayList<String> ids = new ArrayList<>();
+        for (int i = 0; i < 22; i++) {ids.add("36" + RepeatStr( 4 - String.valueOf(i).length(), "0") + i);}
+        data.put("ids", ids.toString());
+        try {
+            Response r = p.post ( this.url + "act/GET_JOURNAL_PERIODS_INFO", data);
+            Log.e("asd", r.toString());
+            if (r.toString().equals("[]")){
+                Response rr = new Response("[[360000, new Date(2021,8,1,0,0,0,0), new Date(2021,9,31,0,0,0,0)],[360000, new Date(2021,8,1,0,0,0,0), new Date(2021,9,31,0,0,0,0)],[360000, new Date(2021,8,1,0,0,0,0), new Date(2021,9,31,0,0,0,0)],[360002, new Date(2022,0,10,0,0,0,0), new Date(2022,2,19,0,0,0,0)],[360003, new Date(2022,2,28,0,0,0,0), new Date(2022,4,31,0,0,0,0)],[360004, new Date(2021,8,1,0,0,0,0), new Date(2022,4,31,0,0,0,0)],[360012, new Date(2022,0,10,0,0,0,0), new Date(2022,4,31,0,0,0,0)]]", 400);
+                return RET_JSON_FORMAT(rr);
+            }
+            return new JSONArray(r.toString());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    private JSONArray GET_CLASS_PER_SP(){
+        Map<String, String> data = new HashMap<>();
+        data.put("cls", this.cls);
+        try {
+            Response r = p.post ( this.url + "act/GET_CLASS_PER_SP", data);
             return RET_JSON_FORMAT(r);
         } catch (IOException e) {
             e.printStackTrace();

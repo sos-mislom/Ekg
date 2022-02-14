@@ -31,12 +31,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.security.NoSuchAlgorithmException;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+
+import kotlin.Pair;
 
 public class Notes extends AppCompatActivity {
     NavigationView navigationView;
@@ -97,34 +99,31 @@ public class Notes extends AppCompatActivity {
     private class asyncEXT extends AsyncTask<Void, Void, Map<String, ArrayList>> {
         @RequiresApi(api = Build.VERSION_CODES.N)
         private Map<String, ArrayList> GetContentForActivityMain() {
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                LocalDate begin_dt = LocalDate.now().with(DayOfWeek.MONDAY);
-                LocalDate end_dt = begin_dt.plusDays(5);
                 try {
                     Ext ext = new Ext("Зайцев","3MA8|ZJQ{0");
                     //Ext ext = new Ext("Зайцева","<Cb0@4F9Sx");
                     //Ext ext = new Ext("Кудряшов","Ob7]NDz79+");
+                    Pair<LocalDate, LocalDate> intervals = ext.GET_INTERVAL();
+                    Log.e("pair", intervals.toString());
                     JSONArray journalData = ext.GET_STUDENT_JOURNAL_DATA();
                     Map<String, ArrayList> notes = new TreeMap();
-                    Log.e("journalData", String.valueOf(journalData));
+
                     for (int k = 0; k < journalData.length(); k++) {
-                        String day = String.valueOf(journalData.getJSONArray(k).getJSONArray(3).get(2));
-                        String month = String.valueOf((Integer.parseInt(String.valueOf(journalData.getJSONArray(k).getJSONArray(3).get(1)))+1));
-                        if (day.length() == 1){ day = "0"+ day; }
-                        if (month.length() == 1){ month = "0"+ month; }
-                        String Date = day + "." + month + "." + journalData.getJSONArray(k).getJSONArray(3).get(0);
-                        String Subj = ext.sbj_names.get(journalData.getJSONArray(k).getInt(4));
-                        Log.e("content", ext.sbj_names.get(journalData.getJSONArray(k).getInt(4)));
+                        String Date = Ext.GET_DATE(journalData.getJSONArray(k).getJSONArray(3));
+                        String Subj = Ext.sbj_names.get(journalData.getJSONArray(k).getInt(4));
                         if (notes.get(Subj) == null){
                             notes.put(Subj, new ArrayList<>());
                         }
                         else{
-                            ArrayList<String> content = new ArrayList<>();
-                            content.add(Date);
-                            content.add(journalData.getJSONArray(k).getString(8));
-                            content.add(journalData.getJSONArray(k).getString(2));
-                            Objects.requireNonNull(notes.get(Subj)).add(content);
+                            LocalDate date = LocalDate.parse(Date, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+                            if (date.isAfter(intervals.component1()) && date.isBefore(intervals.component2())){
+                                ArrayList<String> content = new ArrayList<>();
+                                content.add(Date);
+                                content.add(journalData.getJSONArray(k).getString(8));
+                                content.add(journalData.getJSONArray(k).getString(2));
+                                Objects.requireNonNull(notes.get(Subj)).add(content);
+                            }
                         }
                     }
                     Log.e("notes", String.valueOf(notes));
