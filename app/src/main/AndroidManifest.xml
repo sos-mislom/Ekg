@@ -18,22 +18,26 @@
         <activity
             android:name=".Activity_main"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.MyApplication.NoActionBar" />
         <activity
             android:name=".Notes"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_note"
             android:theme="@style/Theme.MyApplication.NoActionBar" />
         <activity
             android:name=".Diary"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_diary"
             android:theme="@style/Theme.MyApplication.NoActionBar" />
 
         <activity
             android:name=".Messages"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_messages"
             android:theme="@style/Theme.MyApplication.NoActionBar"
             tools:ignore="DuplicateActivity" />

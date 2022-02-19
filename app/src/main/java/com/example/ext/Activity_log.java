@@ -27,10 +27,6 @@ public class Activity_log extends AppCompatActivity {
 
 
         logTview = (TextView) findViewById(R.id.auth);
-
-/*        asyncEXT task = new asyncEXT();
-        task.execute();*/
-
         logInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -38,7 +34,7 @@ public class Activity_log extends AppCompatActivity {
                 String password = passwordFromLay.getText().toString();
                 int Code_Of_Check_auth = AUTHCheck.checkLogin(username, password);
                 if (Code_Of_Check_auth == 200){ logTview.setText("Успех");
-                    Intent i = new Intent(Activity_log.this, Notes.class);
+                    Intent i = new Intent(Activity_log.this, Activity_main.class);
                     i.putExtra("result", username+" "+password);
                     startActivity(i);
                 }

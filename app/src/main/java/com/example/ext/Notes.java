@@ -31,9 +31,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -104,12 +106,26 @@ public class Notes extends AppCompatActivity {
                     Ext ext = new Ext("Зайцев","3MA8|ZJQ{0");
                     //Ext ext = new Ext("Зайцева","<Cb0@4F9Sx");
                     //Ext ext = new Ext("Кудряшов","Ob7]NDz79+");
-                    Pair<LocalDate, LocalDate> intervals = ext.GET_INTERVAL();
-                    Log.e("pair", intervals.toString());
+                    Pair<LocalDate, LocalDate> dt = ext.GET_INTERVAL(false);
+                    JSONArray list_of_weights = ext.GET_STUDENT_LESSONS(dt.component1().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), dt.component2().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                    Map<Integer, ArrayList> id_of_overweight_notes = new TreeMap();
+                    Double weight = 1.0;
+                    for (int i = 0; i < list_of_weights.length(); i++) {
+                        if (!list_of_weights.getJSONArray(i).get(9).equals(null)){ weight = list_of_weights.getJSONArray(i).getDouble(9);}
+                        if (!list_of_weights.getJSONArray(i).get(3).equals(null) && weight == 1.0){ weight = list_of_weights.getJSONArray(i).getDouble(3);}
+                        if (weight != 1.0){
+                            id_of_overweight_notes.put(list_of_weights.getJSONArray(i).getInt(0), new ArrayList<Double>(Collections.singleton(weight)));
+                        }
+                    }
+
+                    Pair<LocalDate, LocalDate> intervals = ext.GET_INTERVAL(true);
                     JSONArray journalData = ext.GET_STUDENT_JOURNAL_DATA();
                     Map<String, ArrayList> notes = new TreeMap();
-
                     for (int k = 0; k < journalData.length(); k++) {
+                        weight = 1.0;
+                        if (id_of_overweight_notes.containsKey(journalData.getJSONArray(k).getInt(0))){
+                            weight = (Double) id_of_overweight_notes.get(journalData.getJSONArray(k).getInt(0)).get(0);
+                        }
                         String Date = Ext.GET_DATE(journalData.getJSONArray(k).getJSONArray(3));
                         String Subj = Ext.sbj_names.get(journalData.getJSONArray(k).getInt(4));
                         if (notes.get(Subj) == null){
@@ -117,11 +133,12 @@ public class Notes extends AppCompatActivity {
                         }
                         else{
                             LocalDate date = LocalDate.parse(Date, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-                            if (date.isAfter(intervals.component1()) && date.isBefore(intervals.component2())){
+                            if ((date.isAfter(intervals.component1()) || date.isEqual(intervals.component1())) && (date.isBefore(intervals.component2())) || date.isEqual(intervals.component2())){
                                 ArrayList<String> content = new ArrayList<>();
                                 content.add(Date);
                                 content.add(journalData.getJSONArray(k).getString(8));
                                 content.add(journalData.getJSONArray(k).getString(2));
+                                content.add(String.valueOf(weight));
                                 Objects.requireNonNull(notes.get(Subj)).add(content);
                             }
                         }
@@ -147,6 +164,10 @@ public class Notes extends AppCompatActivity {
             super.onPostExecute(result);
             tblayoutl = (TableLayout) findViewById(R.id.tblayout);
             for (String subj: result.keySet()) {
+                int count = 0;
+                double nominator = 0.0;
+                double denominator = 0.0;
+                double weight = 1.0;
                 TableLayout tbl_of_subj = new TableLayout(Notes.this);
                 TableRow row_of_subj_name = new TableRow(Notes.this);
                 TableRow tbl_of_notes = new TableRow(Notes.this);
@@ -159,6 +180,7 @@ public class Notes extends AppCompatActivity {
 
                 ArrayList<ArrayList<String>> array = result.get(subj);
                 for (int j = 0; j < array.size(); j++) {
+
                     TableRow row_of_note = new TableRow(Notes.this);
                     TextView note = new TextView(Notes.this);
 
@@ -210,12 +232,22 @@ public class Notes extends AppCompatActivity {
                             shapeDrawable2.setStroke(2.0f, ContextCompat.getColor(Notes.this, R.color.text));
                             break;
                     }
+                    weight = Double.parseDouble(array.get(j).get(3));
+                    if(!array.get(j).get(2).matches("[a-zA-ZА-Яа-я]+")){
+                        count++;
+                        nominator += Integer.parseInt(array.get(j).get(2)) * weight;
+                        denominator += weight;
+                    }
                     note.setText(array.get(j).get(2) + " ");
                     row_of_note.addView(note);
                     tbl_of_notes.addView(row_of_note);
                 }
                 TextView average_note = new TextView(Notes.this);
-                average_note.setText("5.00");
+                if (count > 2) {
+                    String formattedDouble = new DecimalFormat("#0.00").format(nominator/denominator);
+                    average_note.setText(formattedDouble);
+                }else {average_note.setText("0.00");}
+
                 TableRow.LayoutParams trLayoutParams = new TableRow.LayoutParams();
                 trLayoutParams.setMargins(7, 7, 7, 7);
                 average_note.setLayoutParams(trLayoutParams);

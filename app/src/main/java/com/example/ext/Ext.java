@@ -69,7 +69,7 @@ public class Ext {
         return result;
     }
 
-    public Pair<LocalDate, LocalDate> GET_INTERVAL(){
+    public Pair<LocalDate, LocalDate> GET_INTERVAL(boolean is_not_essesery_to_send_30004){
         try {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             JSONArray list_of_periods_dates = this.GET_JOURNAL_PERIODS_INFO();
@@ -88,12 +88,15 @@ public class Ext {
                 list_of_intervals.put(list_of_periods_dates.getJSONArray(i).getInt(0), pair);
             }
             for (int index : list_of_intervals.keySet()) {
-                if (index != 360004){
+                if (is_not_essesery_to_send_30004 && index != 360004){
                     LocalDate t1start = list_of_intervals.get(index).component1();
                     LocalDate t1end = list_of_intervals.get(index).component2();
                     if (now.isAfter(t1start) && now.isBefore(t1end)){
                         return list_of_intervals.get(index);
                     }
+                }
+                else if (!is_not_essesery_to_send_30004 && index==360004){
+                    return list_of_intervals.get(index);
                 }
             }
         }
@@ -138,29 +141,41 @@ public class Ext {
 
         return str_bld.toString().replace("\\u", "%u");
     }
-    private JSONArray RET_JSON_FORMAT(Response r){
+    private JSONArray RET_JSON_FORMAT(Response r, boolean flag){
         String data = r.toString().replaceAll("new Date\\((([0-9]+,?-?)+)\\)", "[$1]");
         try {
-            boolean is_open = false;
-            data = data.replace("\\n", "").replace("\r", "").replace("\t", "");
-            for (int i = 0; i < data.length()-3; i++) {
-                if (data.charAt(i) == '"' && !is_open){
-                    is_open = true;
-                }
-                else if (data.charAt(i+1) == ',' && data.charAt(i) == '"' || (!isAlpha(String.valueOf(data.charAt(i+3))) && data.charAt(i+3) == 'n')){
-                    is_open = false;
-                }
-                else if (is_open && data.charAt(i) == '"' && !(data.charAt(i) == '"' && data.charAt(i+1) == '"')){
-                    data = data.substring(0, i++) + "$" + data.substring(i);
+            if (flag) {
+                boolean is_open = false;
+                data = data.replace("\n", "").replace("\r", "").replace("\t", "");
+                for (int i = 0; i < data.length()-1; i++) {
+                    if (data.charAt(i) == '"' && !is_open) {
+                        is_open = true;
+                    } else if (data.charAt(i + 1) == ',' && data.charAt(i) == '"' && (!isAlpha(String.valueOf(data.charAt(i + 3))) || data.charAt(i + 3) == 'n')) {
+                        is_open = false;
+                    } else if (is_open && data.charAt(i) == '"') {
+                        data = data.substring(0, i++) + "$" + data.substring(i);
+                    }
                 }
             }
-            data = data.replace("\n", "");
+            data = data.replace("\\", "");
             return new JSONArray(data);
         } catch (JSONException | StringIndexOutOfBoundsException e) {
             e.printStackTrace();
 
         } return null;
     }
+
+    private JSONArray RET_JSON_FORMAT(Response r){
+        String data = r.toString().replaceAll("new Date\\((([0-9]+,?-?)+)\\)", "[$1]");
+        try {
+            data = data.replace("\n", "").replace("\r", "").replace("\t", "");
+            return new JSONArray(data);
+        } catch (JSONException | StringIndexOutOfBoundsException e) {
+            e.printStackTrace();
+
+        } return null;
+    }
+
     public void UCH_YEAR() {
         @SuppressLint("SimpleDateFormat") String currentDate = new SimpleDateFormat("dd.MM.yyyy").format(Calendar.getInstance().getTime());
         Map<String, String> data = new HashMap<>();
@@ -205,7 +220,7 @@ public class Ext {
         data.put("isGuru", "false");
         try {
             Response r = p.post ( this.url + "act/GET_STUDENT_MESSAGES", data);
-            return RET_JSON_FORMAT(r);
+            return RET_JSON_FORMAT(r, true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -302,6 +317,23 @@ public class Ext {
 
         try {
             Response r = p.post ( this.url + "act/GET_STUDENT_DAIRY", data);
+            return RET_JSON_FORMAT(r);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public JSONArray GET_STUDENT_LESSONS(String begin_dt, String end_dt) {
+        Map<String, String> data = new HashMap<>();
+        data.put("cls", this.cls);
+        data.put("parallelClasses", "");
+        data.put("uchYear", this.uchYear);
+        data.put("student", this.studentId);
+        data.put("period_begin", begin_dt);
+        data.put("period_end", end_dt);
+
+        try {
+            Response r = p.post ( this.url + "act/GET_STUDENT_LESSONS", data);
             return RET_JSON_FORMAT(r);
         } catch (IOException e) {
             e.printStackTrace();
