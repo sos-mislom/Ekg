@@ -121,7 +121,7 @@ public class Ext {
         return day;
     }
 
-    private static String PasswordToSHA1(String passwordToHash) throws NoSuchAlgorithmException {
+    static String PasswordToSHA1(String passwordToHash) throws NoSuchAlgorithmException {
         MessageDigest message_dig = MessageDigest.getInstance("SHA-1");
         byte[] bytes = message_dig.digest(passwordToHash.getBytes());
         StringBuilder str_bld = new StringBuilder();
@@ -190,13 +190,12 @@ public class Ext {
         }
     }
 
-    public Object AUTH() throws IOException {
+    public JSONArray AUTH() throws IOException {
         Map<String, String> data = new HashMap<>();
         data.put("l", this.username);
         data.put("p", this.password);
         try {
             Response r = p.post(this.url + "login", data);
-            if (r == null) return new JSONObject("{'error': 'Неправильный логин и/или пароль.'}");
             JSONArray arr = new JSONArray(r.toString());
             this.userId = arr.getJSONArray(0).getString(0);
             this.studentId = arr.getJSONArray(0).getString(6);
@@ -204,15 +203,16 @@ public class Ext {
             data.put("uId", this.userId);
             data.put("act", String.valueOf(1));
             if (p.post(this.url + "auth", data).toString().equals("ok")) {
-                return new JSONObject("{'success': 'ok'}");
+                return new JSONArray("[ok]");
             }else {
-                return new JSONObject("{'error': 'Ошибка авторизации.'}");
+                return new JSONArray("[Ошибка авторизации.");
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
         return null;
     }
+
     public JSONArray GET_MESSAGES() {
         Map<String, String> data = new HashMap<>();
         data.put("uchYear", this.uchYear);

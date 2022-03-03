@@ -2,10 +2,12 @@ package com.example.ext;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +20,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -27,11 +30,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -41,11 +48,15 @@ public class Activity_main extends AppCompatActivity {
     NavigationView navigationView;
     TableLayout tblayoutl;
     int j;
+    String password;
+    String username;
     TableLayout row_of_subj;
     TableRow row_of_date;
     TextView textView1;
     TextView textView2;
     TableLayout row_of_day;
+    static Ext globalext;
+
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -53,6 +64,9 @@ public class Activity_main extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        password = preferences.getString("password", "");
+        username = preferences.getString("username", "");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -63,6 +77,9 @@ public class Activity_main extends AppCompatActivity {
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
         new asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+    public static Ext getExt() {
+        return globalext;
     }
     @SuppressLint("NonConstantResourceId")
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -102,11 +119,13 @@ public class Activity_main extends AppCompatActivity {
                 LocalDate begin_dt = LocalDate.now().with(DayOfWeek.MONDAY);
                 LocalDate end_dt = begin_dt.plusDays(5);
                 try {
-                    Ext ext = new Ext("Зайцев","3MA8|ZJQ{0");
                     //Ext ext = new Ext("Зайцева","<Cb0@4F9Sx");
+                    //Ext ext = new Ext("Зайцев","3MA8|ZJQ{0");
                     //Ext ext = new Ext("Кудряшов","Ob7]NDz79+");
+                    Ext ext = new Ext(username, password);
                     JSONArray dairyData = ext.GET_STUDENT_DAIRY(begin_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), end_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                     JSONArray studentGroups = ext.GET_STUDENT_GROUPS();
+                    globalext = ext;
                     Map<String, ArrayList> whereIsLesson = new TreeMap();
                     boolean curInGroup;
                     for (int k = 0; k < dairyData.length(); k++) {
@@ -144,7 +163,7 @@ public class Activity_main extends AppCompatActivity {
 
                     }
                     return whereIsLesson;
-                } catch (NoSuchAlgorithmException | JSONException e) {
+                } catch (JSONException | NoSuchAlgorithmException e) {
                     e.printStackTrace(); }
                 return null;
             }
@@ -155,14 +174,13 @@ public class Activity_main extends AppCompatActivity {
         protected Map<String, ArrayList> doInBackground(Void... params) {
             return GetContentForActivityMain();
         }
-
         @RequiresApi(api = Build.VERSION_CODES.N)
         @SuppressLint("ResourceAsColor")
         @Override
         protected void onPostExecute(Map<String, ArrayList> result) {
             super.onPostExecute(result);
             tblayoutl = (TableLayout) findViewById(R.id.tblayout);
-            List<String> keys = new ArrayList<String>(result.keySet());
+            List<String> keys = new ArrayList<>(result.keySet());
             List<LocalDate> keys_format_date = new ArrayList<>();
             for (int i = 0; i < keys.size(); i++) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -179,9 +197,22 @@ public class Activity_main extends AppCompatActivity {
             for (String date: keys) {
                 row_of_date = new TableRow(Activity_main.this);
                 TextView textView = new TextView(Activity_main.this);
-                textView.setText(date);
+                textView.setTextColor(ContextCompat.getColor(Activity_main.this, R.color.white));
+                textView.setPadding(4, 0, 0, 0);
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat format1 = new SimpleDateFormat("dd.MM.yyyy");
+                Date dt1 = null;
+                try {
+                    dt1 = format1.parse(date);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                @SuppressLint("SimpleDateFormat") DateFormat format2 = new SimpleDateFormat("EEEE");
+                assert dt1 != null;
+                String finalDay = format2.format(dt1);
+                textView.setText(finalDay.substring(0, 1).toUpperCase() + finalDay.substring(1) + " " + date);
+
                 row_of_date.addView(textView);
-                row_of_date.setBackgroundColor(R.color.teal_200);
+                row_of_date.setBackgroundColor(ContextCompat.getColor(Activity_main.this, R.color.divider_color2));
                 tblayoutl.addView(row_of_date);
                 j = 1;
                 row_of_day = new TableLayout(Activity_main.this);

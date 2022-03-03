@@ -6,18 +6,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/app_bar_activity_notes">
+    tools:showIn="@layout/app_bar_activity_notes"
+    android:background="#E1F6FF">
+
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:showIn="@layout/app_bar_activity_notes">
+        tools:showIn="@layout/app_bar_activity_notes"
+        android:background="#E1F6FF">
         <TableLayout
             android:id="@+id/tblayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
-            android:background="#F1E5F3"
+            android:background="#E1F6FF"
             tools:ignore="MissingConstraints">
         </TableLayout>
     </HorizontalScrollView>

@@ -30,7 +30,6 @@ import com.google.android.material.shape.ShapeAppearanceModel;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -45,13 +44,6 @@ import kotlin.Pair;
 public class Notes extends AppCompatActivity {
     NavigationView navigationView;
     TableLayout tblayoutl;
-    int j;
-    TableLayout row_of_subj;
-    TableRow row_of_date;
-    TextView textView1;
-    TextView textView2;
-    TableLayout row_of_day;
-
     @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,14 +90,13 @@ public class Notes extends AppCompatActivity {
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
     private class asyncEXT extends AsyncTask<Void, Void, Map<String, ArrayList>> {
         @RequiresApi(api = Build.VERSION_CODES.N)
-        private Map<String, ArrayList> GetContentForActivityMain() {
+        private Map<String, ArrayList> GetContentForNotes() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 try {
-                    Ext ext = new Ext("Зайцев","3MA8|ZJQ{0");
-                    //Ext ext = new Ext("Зайцева","<Cb0@4F9Sx");
-                    //Ext ext = new Ext("Кудряшов","Ob7]NDz79+");
+                    Ext ext = Activity_main.getExt();
                     Pair<LocalDate, LocalDate> dt = ext.GET_INTERVAL(false);
                     JSONArray list_of_weights = ext.GET_STUDENT_LESSONS(dt.component1().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), dt.component2().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                     Map<Integer, ArrayList> id_of_overweight_notes = new TreeMap();
@@ -145,7 +136,7 @@ public class Notes extends AppCompatActivity {
                     }
                     Log.e("notes", String.valueOf(notes));
                     return notes;
-                } catch (NoSuchAlgorithmException | JSONException e) {
+                } catch (JSONException e) {
                     e.printStackTrace(); }
                 return null;
             }
@@ -154,7 +145,7 @@ public class Notes extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected Map<String, ArrayList> doInBackground(Void... params) {
-            return GetContentForActivityMain();
+            return GetContentForNotes();
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)

@@ -7,6 +7,7 @@
     tools:context=".Notes">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/Theme.MyApplication.AppBarOverlay">
@@ -15,7 +16,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/divider_color"
             app:popupTheme="@style/Theme.MyApplication.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
