@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.widget.TableLayout;
@@ -134,7 +133,6 @@ public class Notes extends AppCompatActivity {
                             }
                         }
                     }
-                    Log.e("notes", String.valueOf(notes));
                     return notes;
                 } catch (JSONException e) {
                     e.printStackTrace(); }

@@ -56,6 +56,7 @@ public class Activity_main extends AppCompatActivity {
     TextView textView2;
     TableLayout row_of_day;
     static Ext globalext;
+    private Ext ext;
 
 
     @SuppressLint("ResourceAsColor")
@@ -122,7 +123,11 @@ public class Activity_main extends AppCompatActivity {
                     //Ext ext = new Ext("Зайцева","<Cb0@4F9Sx");
                     //Ext ext = new Ext("Зайцев","3MA8|ZJQ{0");
                     //Ext ext = new Ext("Кудряшов","Ob7]NDz79+");
-                    Ext ext = new Ext(username, password);
+                    if (globalext != null) {
+                        ext = globalext;
+                    } else {
+                        ext = new Ext(username, password);
+                    }
                     JSONArray dairyData = ext.GET_STUDENT_DAIRY(begin_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), end_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                     JSONArray studentGroups = ext.GET_STUDENT_GROUPS();
                     globalext = ext;
@@ -144,7 +149,7 @@ public class Activity_main extends AppCompatActivity {
                             }
                         }
                         if (curInGroup || dairyData.getJSONArray(k).getInt(10) == 1){
-                            String mark = dairyData.getJSONArray(k).getString(5); // after i need to add IsMarkRed and IsMarkHaveComm !!!!!!!!
+                            String mark = dairyData.getJSONArray(k).getString(5);
                             if (dairyData.getJSONArray(k).get(7).toString().equals("null")){
                                 if (whereIsLesson.get(Date) == null){
                                     whereIsLesson.put(Date, new ArrayList<>());

@@ -39,7 +39,7 @@ public class Activity_log extends AppCompatActivity {
         password = preferences.getString("password", "");
         username = preferences.getString("username", "");
 
-        if (password.length() > 0 && username.length() > 0){
+        if (password.length() > 0 || username.length() > 0){
             Intent intent = new Intent(this, Activity_main.class);
             startActivity(intent);
             finish();

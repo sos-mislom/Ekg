@@ -141,29 +141,6 @@ public class Ext {
 
         return str_bld.toString().replace("\\u", "%u");
     }
-    private JSONArray RET_JSON_FORMAT(Response r, boolean flag){
-        String data = r.toString().replaceAll("new Date\\((([0-9]+,?-?)+)\\)", "[$1]");
-        try {
-            if (flag) {
-                boolean is_open = false;
-                data = data.replace("\n", "").replace("\r", "").replace("\t", "");
-                for (int i = 0; i < data.length()-1; i++) {
-                    if (data.charAt(i) == '"' && !is_open) {
-                        is_open = true;
-                    } else if (data.charAt(i + 1) == ',' && data.charAt(i) == '"' && (!isAlpha(String.valueOf(data.charAt(i + 3))) || data.charAt(i + 3) == 'n')) {
-                        is_open = false;
-                    } else if (is_open && data.charAt(i) == '"') {
-                        data = data.substring(0, i++) + "$" + data.substring(i);
-                    }
-                }
-            }
-            data = data.replace("\\", "");
-            return new JSONArray(data);
-        } catch (JSONException | StringIndexOutOfBoundsException e) {
-            e.printStackTrace();
-
-        } return null;
-    }
 
     private JSONArray RET_JSON_FORMAT(Response r){
         String data = r.toString().replaceAll("new Date\\((([0-9]+,?-?)+)\\)", "[$1]");
@@ -220,7 +197,7 @@ public class Ext {
         data.put("isGuru", "false");
         try {
             Response r = p.post ( this.url + "act/GET_STUDENT_MESSAGES", data);
-            return RET_JSON_FORMAT(r, true);
+            return RET_JSON_FORMAT(r);
         } catch (IOException e) {
             e.printStackTrace();
         }
