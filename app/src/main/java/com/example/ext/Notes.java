@@ -8,9 +8,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -228,6 +230,15 @@ public class Notes extends AppCompatActivity {
                         denominator += weight;
                     }
                     note.setText(array.get(j).get(2) + " ");
+                    double finalWeight = weight;
+                    note.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast toast = Toast.makeText(getApplicationContext(),
+                                    "вес оценки:" + String.valueOf(finalWeight), Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+                    });
                     row_of_note.addView(note);
                     tbl_of_notes.addView(row_of_note);
                 }
