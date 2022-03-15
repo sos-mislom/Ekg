@@ -236,7 +236,6 @@ public class Activity_main extends AppCompatActivity {
                     textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP,25);
                     textView2.setPadding(10, 0, 10, 0);
                     textView2.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
-
                     TextView finalTextView = textView2;
                     textView1.setOnClickListener(new View.OnClickListener() {
                         @Override

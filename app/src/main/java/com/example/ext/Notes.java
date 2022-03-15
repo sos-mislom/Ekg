@@ -154,6 +154,7 @@ public class Notes extends AppCompatActivity {
         protected void onPostExecute(Map<String, ArrayList> result) {
             super.onPostExecute(result);
             tblayoutl = (TableLayout) findViewById(R.id.tblayout);
+
             for (String subj: result.keySet()) {
                 int count = 0;
                 double nominator = 0.0;
@@ -231,11 +232,12 @@ public class Notes extends AppCompatActivity {
                     }
                     note.setText(array.get(j).get(2) + " ");
                     double finalWeight = weight;
+                    String finalComment =  array.get(j).get(1);
                     note.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Toast toast = Toast.makeText(getApplicationContext(),
-                                    "вес оценки:" + String.valueOf(finalWeight), Toast.LENGTH_SHORT);
+                                    "Вес оценки:" + finalWeight + " Комментарий" + finalComment, Toast.LENGTH_SHORT);
                             toast.show();
                         }
                     });
