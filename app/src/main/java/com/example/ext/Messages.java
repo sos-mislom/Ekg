@@ -14,7 +14,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -89,7 +88,6 @@ public class Messages extends AppCompatActivity {
                     Ext ext = Activity_main.getExt();
                     JSONArray messageData = ext.GET_MESSAGES();
                     Map<String, ArrayList> messages = new TreeMap();
-
                     for (int k = 0; k < messageData.length(); k++) {
                         String Date = ext.GET_DATE(messageData.getJSONArray(k).getJSONArray(4));
                         String teacher = ext.teachers.get(messageData.getJSONArray(k).getInt(1));

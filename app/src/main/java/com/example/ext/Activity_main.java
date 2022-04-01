@@ -68,6 +68,8 @@ public class Activity_main extends AppCompatActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         password = preferences.getString("password", "");
         username = preferences.getString("username", "");
+        new asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -77,7 +79,6 @@ public class Activity_main extends AppCompatActivity {
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
-        new asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
     public static Ext getExt() {
         return globalext;

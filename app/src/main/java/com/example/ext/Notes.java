@@ -45,6 +45,7 @@ import kotlin.Pair;
 public class Notes extends AppCompatActivity {
     NavigationView navigationView;
     TableLayout tblayoutl;
+
     @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
