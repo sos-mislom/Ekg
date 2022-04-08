@@ -19,7 +19,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
-public class Activity_log extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
     EditText usernameFromLay, passwordFromLay;
     private String username;
     private String password;
@@ -40,7 +40,7 @@ public class Activity_log extends AppCompatActivity {
         username = preferences.getString("username", "");
 
         if (password.length() > 0 || username.length() > 0){
-            Intent intent = new Intent(this, Activity_main.class);
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
         }
@@ -83,7 +83,7 @@ public class Activity_log extends AppCompatActivity {
                         .putString("username", username)
                         .apply();
                 logTview.setText("Успех");
-                Intent intent = new Intent(Activity_log.this, Activity_main.class);
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
             }

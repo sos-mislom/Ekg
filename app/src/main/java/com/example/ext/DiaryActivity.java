@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class Diary extends Activity {
+public class DiaryActivity extends Activity {
     private NavigationView navigationView;
     private TableLayout tblayoutl;
     private String nameOfLesson;
@@ -123,7 +123,7 @@ public class Diary extends Activity {
 
 
         //new asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(Diary.this);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(DiaryActivity.this);
         dairyData = preferences.getString("dairyData", "");
         //preferences.edit().remove("dairyData").commit();
         if (dairyData.length() > 0) {
@@ -148,19 +148,19 @@ public class Diary extends Activity {
         tblayoutl = (TableLayout) findViewById(R.id.tblayout);
 
         for (int i = 0; i < jsondairy.size(); i++) {
-            TableLayout tbl = new TableLayout(Diary.this);
-            TableLayout tblForNewLesson = new TableLayout(Diary.this);
-            TableRow tx_row = new TableRow(Diary.this);
-            TextView tx = new TextView(Diary.this);
+            TableLayout tbl = new TableLayout(DiaryActivity.this);
+            TableLayout tblForNewLesson = new TableLayout(DiaryActivity.this);
+            TableRow tx_row = new TableRow(DiaryActivity.this);
+            TextView tx = new TextView(DiaryActivity.this);
             //tx.setText(days.get(i) + " " + jsondairy.get(days.get(i)));
             tx.setText(days.get(i));
             tx.setPadding(5,5,0,0);
             tx.setTextSize(20);
             tx.setTextColor(Color.WHITE);
-            tx_row.setBackgroundColor(ContextCompat.getColor(Diary.this, R.color.divider_color2));
+            tx_row.setBackgroundColor(ContextCompat.getColor(DiaryActivity.this, R.color.divider_color2));
             tx_row.addView(tx);
             tbl.addView(tx_row);
-            ImageButton btn = new ImageButton(Diary.this);
+            ImageButton btn = new ImageButton(DiaryActivity.this);
             btn.setId(i);
             btn.setImageDrawable(plus);
             tx_row.addView(btn);
@@ -169,12 +169,12 @@ public class Diary extends Activity {
                 public void onClick(View view) {
                     int last = jsondairy.get(days.get(btn.getId())).size();
                     if (last <= 8){
-                        TableRow new_lesson = new TableRow(Diary.this);
-                        ImageButton btn2 = new ImageButton(Diary.this);
-                        ImageButton btn1 = new ImageButton(Diary.this);
+                        TableRow new_lesson = new TableRow(DiaryActivity.this);
+                        ImageButton btn2 = new ImageButton(DiaryActivity.this);
+                        ImageButton btn1 = new ImageButton(DiaryActivity.this);
                         nameOfLesson = last + ". ОКНО";
 
-                        EditText ll = new EditText(Diary.this);
+                        EditText ll = new EditText(DiaryActivity.this);
                         ll.setText(nameOfLesson);
 
                         jsondairy.get(days.get(btn.getId())).add("" + ll.getText());
@@ -248,12 +248,12 @@ public class Diary extends Activity {
             });
 
             for (int l = 0; l < jsondairy.get(days.get(i)).size(); l++) {
-                TableRow new_lesson = new TableRow(Diary.this);
-                ImageButton btn2 = new ImageButton(Diary.this);
-                ImageButton btn1 = new ImageButton(Diary.this);
+                TableRow new_lesson = new TableRow(DiaryActivity.this);
+                ImageButton btn2 = new ImageButton(DiaryActivity.this);
+                ImageButton btn1 = new ImageButton(DiaryActivity.this);
 
                 String subject = jsondairy.get(days.get(btn.getId())).get(l);
-                EditText ll = new EditText(Diary.this);
+                EditText ll = new EditText(DiaryActivity.this);
                 ll.setText(subject);
                 new_lesson.addView(ll);
                 ll.addTextChangedListener(new TextWatcher() {
@@ -329,23 +329,38 @@ public class Diary extends Activity {
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.nav_main:{
-                Intent mainIntent = new Intent(this, Activity_main.class);
+                Intent mainIntent = new Intent(this, MainActivity.class);
                 startActivity(mainIntent);
                 break;
             }
             case R.id.nav_notes: {
-                Intent mainIntent = new Intent(this, Notes.class);
+                Intent mainIntent = new Intent(this, NotesActivity.class);
                 startActivity(mainIntent);
                 break;
             }
             case R.id.nav_diary: {
-                Intent mainIntent = new Intent(this, Diary.class);
+                Intent mainIntent = new Intent(this, DiaryActivity.class);
                 startActivity(mainIntent);
                 break;
             }
             case R.id.nav_messages:{
-                Intent mainIntent = new Intent(this, Messages.class);
+                Intent mainIntent = new Intent(this, MessagesActivity.class);
                 startActivity(mainIntent);
+                break;
+            }
+            case R.id.nav_settings:{
+                Intent mainIntent = new Intent(this, SettingsActivity.class);
+                startActivity(mainIntent);
+                break;
+            }
+            case R.id.nav_exit:{
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit()
+                        .putString("password", "")
+                        .putString("username", "")
+                        .apply();
+                Intent mainIntent = new Intent(this, LoginActivity.class);
+                startActivity(mainIntent);
+                finish();
                 break;
             }
         }

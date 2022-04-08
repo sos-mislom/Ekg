@@ -28,6 +28,9 @@ public class Ext {
     private final String password;
     private String url;
     private String userId;
+    static String name;
+    static String letter_of_class;
+    static String num_of_class;
     private String studentId;
     private String uchYear;
     public static Map<Integer, String> sbj_names;
@@ -179,6 +182,7 @@ public class Ext {
             JSONArray arr = new JSONArray(r.toString());
             this.userId = arr.getJSONArray(0).getString(0);
             this.studentId = arr.getJSONArray(0).getString(6);
+            name = arr.getJSONArray(0).getString(5);
             data.clear();
             data.put("uId", this.userId);
             data.put("act", String.valueOf(1));
@@ -253,6 +257,8 @@ public class Ext {
             Response r = p.post ( this.url + "act/GET_STUDENT_CLASS", data);
             JSONArray arr = new JSONArray(r.toString());
             this.cls = arr.getJSONArray(0).getString(0);
+            letter_of_class = arr.getJSONArray(0).getString(2);
+            num_of_class = arr.getJSONArray(0).getString(1);
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }

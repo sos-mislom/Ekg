@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,7 +43,7 @@ import java.util.TreeMap;
 
 import kotlin.Pair;
 
-public class Notes extends AppCompatActivity {
+public class NotesActivity extends AppCompatActivity {
     NavigationView navigationView;
     TableLayout tblayoutl;
 
@@ -61,29 +62,44 @@ public class Notes extends AppCompatActivity {
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
-        new Notes.asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new NotesActivity.asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
     @SuppressLint("NonConstantResourceId")
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.nav_main:{
-                Intent mainIntent = new Intent(this, Activity_main.class);
+                Intent mainIntent = new Intent(this, MainActivity.class);
                 startActivity(mainIntent);
                 break;
             }
             case R.id.nav_notes: {
-                Intent mainIntent = new Intent(this, Notes.class);
+                Intent mainIntent = new Intent(this, NotesActivity.class);
                 startActivity(mainIntent);
                 break;
             }
             case R.id.nav_diary: {
-                Intent mainIntent = new Intent(this, Diary.class);
+                Intent mainIntent = new Intent(this, DiaryActivity.class);
                 startActivity(mainIntent);
                 break;
             }
             case R.id.nav_messages:{
-                Intent mainIntent = new Intent(this, Messages.class);
+                Intent mainIntent = new Intent(this, MessagesActivity.class);
                 startActivity(mainIntent);
+                break;
+            }
+            case R.id.nav_settings:{
+                Intent mainIntent = new Intent(this, SettingsActivity.class);
+                startActivity(mainIntent);
+                break;
+            }
+            case R.id.nav_exit:{
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit()
+                        .putString("password", "")
+                        .putString("username", "")
+                        .apply();
+                Intent mainIntent = new Intent(this, LoginActivity.class);
+                startActivity(mainIntent);
+                finish();
                 break;
             }
         }
@@ -98,7 +114,7 @@ public class Notes extends AppCompatActivity {
         private Map<String, ArrayList> GetContentForNotes() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 try {
-                    Ext ext = Activity_main.getExt();
+                    Ext ext = MainActivity.getExt();
                     Pair<LocalDate, LocalDate> dt = ext.GET_INTERVAL(false);
                     JSONArray list_of_weights = ext.GET_STUDENT_LESSONS(dt.component1().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), dt.component2().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                     Map<Integer, ArrayList> id_of_overweight_notes = new TreeMap();
@@ -161,11 +177,11 @@ public class Notes extends AppCompatActivity {
                 double nominator = 0.0;
                 double denominator = 0.0;
                 double weight = 1.0;
-                TableLayout tbl_of_subj = new TableLayout(Notes.this);
-                TableRow row_of_subj_name = new TableRow(Notes.this);
-                TableRow tbl_of_notes = new TableRow(Notes.this);
+                TableLayout tbl_of_subj = new TableLayout(NotesActivity.this);
+                TableRow row_of_subj_name = new TableRow(NotesActivity.this);
+                TableRow tbl_of_notes = new TableRow(NotesActivity.this);
 
-                TextView subj_name = new TextView(Notes.this);
+                TextView subj_name = new TextView(NotesActivity.this);
                 subj_name.setText(subj);
                 subj_name.setTextSize(20);
                 //subj_name.setTextColor(getResources().getColor(R.color.black));
@@ -174,8 +190,8 @@ public class Notes extends AppCompatActivity {
                 ArrayList<ArrayList<String>> array = result.get(subj);
                 for (int j = 0; j < array.size(); j++) {
 
-                    TableRow row_of_note = new TableRow(Notes.this);
-                    TextView note = new TextView(Notes.this);
+                    TableRow row_of_note = new TableRow(NotesActivity.this);
+                    TextView note = new TextView(NotesActivity.this);
 
                     TableRow.LayoutParams trLayoutParams = new TableRow.LayoutParams();
                     trLayoutParams.setMargins(7, 7, 7, 7);
@@ -191,8 +207,8 @@ public class Notes extends AppCompatActivity {
                             .build();
                     MaterialShapeDrawable shapeDrawable = new MaterialShapeDrawable(shapeAppearanceModel);
                     ViewCompat.setBackground(note, shapeDrawable);
-                    shapeDrawable.setFillColor(ContextCompat.getColorStateList(Notes.this, R.color.white));
-                    shapeDrawable.setStroke(2.0f, ContextCompat.getColor(Notes.this, R.color.white));
+                    shapeDrawable.setFillColor(ContextCompat.getColorStateList(NotesActivity.this, R.color.white));
+                    shapeDrawable.setStroke(2.0f, ContextCompat.getColor(NotesActivity.this, R.color.white));
 
                     ShapeAppearanceModel shapeAppearanceModel2 = new ShapeAppearanceModel()
                             .toBuilder()
@@ -205,24 +221,24 @@ public class Notes extends AppCompatActivity {
                     row_of_note.setLayoutParams(trRowParams);
                     switch (array.get(j).get(2)) {
                         case ("4"):
-                            shapeDrawable2.setFillColor(ContextCompat.getColorStateList(Notes.this, R.color.four));
-                            shapeDrawable2.setStroke(2.0f, ContextCompat.getColor(Notes.this, R.color.four));
+                            shapeDrawable2.setFillColor(ContextCompat.getColorStateList(NotesActivity.this, R.color.four));
+                            shapeDrawable2.setStroke(2.0f, ContextCompat.getColor(NotesActivity.this, R.color.four));
                             break;
                         case ("5"):
-                            shapeDrawable2.setFillColor(ContextCompat.getColorStateList(Notes.this, R.color.five));
-                            shapeDrawable2.setStroke(2.0f, ContextCompat.getColor(Notes.this, R.color.five));
+                            shapeDrawable2.setFillColor(ContextCompat.getColorStateList(NotesActivity.this, R.color.five));
+                            shapeDrawable2.setStroke(2.0f, ContextCompat.getColor(NotesActivity.this, R.color.five));
                             break;
                         case ("3"):
-                            shapeDrawable2.setFillColor(ContextCompat.getColorStateList(Notes.this, R.color.tree));
-                            shapeDrawable2.setStroke(2.0f, ContextCompat.getColor(Notes.this, R.color.tree));
+                            shapeDrawable2.setFillColor(ContextCompat.getColorStateList(NotesActivity.this, R.color.tree));
+                            shapeDrawable2.setStroke(2.0f, ContextCompat.getColor(NotesActivity.this, R.color.tree));
                             break;
                         case ("2"):
-                            shapeDrawable2.setFillColor(ContextCompat.getColorStateList(Notes.this, R.color.two));
-                            shapeDrawable2.setStroke(2.0f, ContextCompat.getColor(Notes.this, R.color.two));
+                            shapeDrawable2.setFillColor(ContextCompat.getColorStateList(NotesActivity.this, R.color.two));
+                            shapeDrawable2.setStroke(2.0f, ContextCompat.getColor(NotesActivity.this, R.color.two));
                             break;
                         default:
-                            shapeDrawable2.setFillColor(ContextCompat.getColorStateList(Notes.this, R.color.text));
-                            shapeDrawable2.setStroke(2.0f, ContextCompat.getColor(Notes.this, R.color.text));
+                            shapeDrawable2.setFillColor(ContextCompat.getColorStateList(NotesActivity.this, R.color.text));
+                            shapeDrawable2.setStroke(2.0f, ContextCompat.getColor(NotesActivity.this, R.color.text));
                             break;
                     }
                     weight = Double.parseDouble(array.get(j).get(3));
@@ -245,7 +261,7 @@ public class Notes extends AppCompatActivity {
                     row_of_note.addView(note);
                     tbl_of_notes.addView(row_of_note);
                 }
-                TextView average_note = new TextView(Notes.this);
+                TextView average_note = new TextView(NotesActivity.this);
                 if (count > 2) {
                     String formattedDouble = new DecimalFormat("#0.00").format(nominator/denominator);
                     average_note.setText(formattedDouble);

@@ -3,6 +3,7 @@ package com.example.ext;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -44,7 +45,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
-public class Activity_main extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
     NavigationView navigationView;
     TableLayout tblayoutl;
     int j;
@@ -53,6 +54,9 @@ public class Activity_main extends AppCompatActivity {
     TableLayout row_of_subj;
     TableRow row_of_date;
     TextView textView1;
+    String name;
+    String letter_of_class;
+    String num_of_class;
     TextView textView2;
     TableLayout row_of_day;
     static Ext globalext;
@@ -64,6 +68,7 @@ public class Activity_main extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         password = preferences.getString("password", "");
@@ -87,23 +92,38 @@ public class Activity_main extends AppCompatActivity {
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.nav_main:{
-                Intent mainIntent = new Intent(this, Activity_main.class);
+                Intent mainIntent = new Intent(this, MainActivity.class);
                 startActivity(mainIntent);
                 break;
             }
             case R.id.nav_notes: {
-                Intent mainIntent = new Intent(this, Notes.class);
+                Intent mainIntent = new Intent(this, NotesActivity.class);
                 startActivity(mainIntent);
                 break;
             }
             case R.id.nav_diary: {
-                Intent mainIntent = new Intent(this, Diary.class);
+                Intent mainIntent = new Intent(this, DiaryActivity.class);
                 startActivity(mainIntent);
                 break;
             }
             case R.id.nav_messages:{
-                Intent mainIntent = new Intent(this, Messages.class);
+                Intent mainIntent = new Intent(this, MessagesActivity.class);
                 startActivity(mainIntent);
+                break;
+            }
+            case R.id.nav_settings:{
+                Intent mainIntent = new Intent(this, SettingsActivity.class);
+                startActivity(mainIntent);
+                break;
+            }
+            case R.id.nav_exit:{
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit()
+                        .putString("password", "")
+                        .putString("username", "")
+                        .apply();
+                Intent mainIntent = new Intent(this, LoginActivity.class);
+                startActivity(mainIntent);
+                finish();
                 break;
             }
         }
@@ -116,7 +136,6 @@ public class Activity_main extends AppCompatActivity {
     private class asyncEXT extends AsyncTask<Void, Void, Map<String, ArrayList>> {
         @RequiresApi(api = Build.VERSION_CODES.N)
         private Map<String, ArrayList> GetContentForActivityMain() {
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 LocalDate begin_dt = LocalDate.now().with(DayOfWeek.MONDAY);
                 LocalDate end_dt = begin_dt.plusDays(5);
@@ -131,7 +150,8 @@ public class Activity_main extends AppCompatActivity {
                     }
                     JSONArray dairyData = ext.GET_STUDENT_DAIRY(begin_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), end_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                     JSONArray studentGroups = ext.GET_STUDENT_GROUPS();
-                    globalext = ext;
+                    globalext = ext; name = ext.name;num_of_class = ext.num_of_class;letter_of_class = ext.letter_of_class;
+
                     Map<String, ArrayList> whereIsLesson = new TreeMap();
                     boolean curInGroup;
                     for (int k = 0; k < dairyData.length(); k++) {
@@ -201,9 +221,9 @@ public class Activity_main extends AppCompatActivity {
                 }
             }
             for (String date: keys) {
-                row_of_date = new TableRow(Activity_main.this);
-                TextView textView = new TextView(Activity_main.this);
-                textView.setTextColor(ContextCompat.getColor(Activity_main.this, R.color.white));
+                row_of_date = new TableRow(MainActivity.this);
+                TextView textView = new TextView(MainActivity.this);
+                textView.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.white));
                 textView.setPadding(4, 0, 0, 0);
                 @SuppressLint("SimpleDateFormat") SimpleDateFormat format1 = new SimpleDateFormat("dd.MM.yyyy");
                 Date dt1 = null;
@@ -218,20 +238,20 @@ public class Activity_main extends AppCompatActivity {
                 textView.setText(finalDay.substring(0, 1).toUpperCase() + finalDay.substring(1) + " " + date);
 
                 row_of_date.addView(textView);
-                row_of_date.setBackgroundColor(ContextCompat.getColor(Activity_main.this, R.color.divider_color2));
+                row_of_date.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.divider_color2));
                 tblayoutl.addView(row_of_date);
                 j = 1;
-                row_of_day = new TableLayout(Activity_main.this);
+                row_of_day = new TableLayout(MainActivity.this);
                 ArrayList<ArrayList<String>> array = result.get(date);
                 for (int i = 0; i < array.size(); i++) {
-                    row_of_subj = new TableLayout(Activity_main.this);
-                    textView1 = new TextView(Activity_main.this);
+                    row_of_subj = new TableLayout(MainActivity.this);
+                    textView1 = new TextView(MainActivity.this);
                     textView1.setText(j + ". " + array.get(i).get(0).replace('$', '"'));
                     textView1.setTypeface(null, Typeface.BOLD);
                     textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP,30);
                     textView1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
 
-                    textView2 = new TextView(Activity_main.this);
+                    textView2 = new TextView(MainActivity.this);
                     textView2.setVisibility(View.GONE);
                     textView2.setText(array.get(i).get(2).replace('$', '"'));
                     textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP,25);
@@ -252,6 +272,15 @@ public class Activity_main extends AppCompatActivity {
                     j++;
                 }
                 tblayoutl.addView(row_of_day);
+
+                Resources res = getResources();
+                String name_after_replace = String.format(res.getString(R.string.nav_header_title), name);
+                String classs_after_replace = String.format(res.getString(R.string.nav_header_subtitle), num_of_class, letter_of_class);
+                TextView name = findViewById(R.id.name);
+                name.setText(name_after_replace);
+                TextView classs = findViewById(R.id.classs);
+                classs.setText(classs_after_replace);
+
             }
         }
     }

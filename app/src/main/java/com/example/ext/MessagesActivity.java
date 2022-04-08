@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.MenuItem;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -29,7 +30,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
-public class Messages extends AppCompatActivity {
+public class MessagesActivity extends AppCompatActivity {
     NavigationView navigationView;
     TableLayout tblayoutl;
     @SuppressLint("ClickableViewAccessibility")
@@ -51,23 +52,38 @@ public class Messages extends AppCompatActivity {
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.nav_main:{
-                Intent mainIntent = new Intent(this, Activity_main.class);
+                Intent mainIntent = new Intent(this, MainActivity.class);
                 startActivity(mainIntent);
                 break;
             }
             case R.id.nav_notes: {
-                Intent mainIntent = new Intent(this, Notes.class);
+                Intent mainIntent = new Intent(this, NotesActivity.class);
                 startActivity(mainIntent);
                 break;
             }
             case R.id.nav_diary: {
-                Intent mainIntent = new Intent(this, Diary.class);
+                Intent mainIntent = new Intent(this, DiaryActivity.class);
                 startActivity(mainIntent);
                 break;
             }
             case R.id.nav_messages:{
-                Intent mainIntent = new Intent(this, Messages.class);
+                Intent mainIntent = new Intent(this, MessagesActivity.class);
                 startActivity(mainIntent);
+                break;
+            }
+            case R.id.nav_settings:{
+                Intent mainIntent = new Intent(this, SettingsActivity.class);
+                startActivity(mainIntent);
+                break;
+            }
+            case R.id.nav_exit:{
+                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit()
+                        .putString("password", "")
+                        .putString("username", "")
+                        .apply();
+                Intent mainIntent = new Intent(this, LoginActivity.class);
+                startActivity(mainIntent);
+                finish();
                 break;
             }
         }
@@ -85,7 +101,7 @@ public class Messages extends AppCompatActivity {
                 LocalDate begin_dt = LocalDate.now().with(DayOfWeek.MONDAY);
                 LocalDate end_dt = begin_dt.plusDays(5);
                 try {
-                    Ext ext = Activity_main.getExt();
+                    Ext ext = MainActivity.getExt();
                     JSONArray messageData = ext.GET_MESSAGES();
                     Map<String, ArrayList> messages = new TreeMap();
                     for (int k = 0; k < messageData.length(); k++) {
@@ -122,11 +138,11 @@ public class Messages extends AppCompatActivity {
             super.onPostExecute(result);
             tblayoutl = (TableLayout) findViewById(R.id.tblayout);
             for (String teacher: result.keySet()) {
-                TableRow row_of_msg_teacher = new TableRow(Messages.this);
-                TableLayout tbl_of_msg = new TableLayout(Messages.this);
+                TableRow row_of_msg_teacher = new TableRow(MessagesActivity.this);
+                TableLayout tbl_of_msg = new TableLayout(MessagesActivity.this);
 
                 ArrayList<ArrayList<String>> array = result.get(teacher);
-                TextView tt = new TextView(Messages.this);
+                TextView tt = new TextView(MessagesActivity.this);
                 tt.setText(teacher);
                 tt.setTextSize(20);
                 tt.setPadding(5, 0, 0, 0);
@@ -134,8 +150,8 @@ public class Messages extends AppCompatActivity {
                 tbl_of_msg.addView(row_of_msg_teacher);
 
                 for (int j = 0; j < array.size(); j++) {
-                    TableRow row_of_msg = new TableRow(Messages.this);
-                    TextView msg = new TextView(Messages.this);
+                    TableRow row_of_msg = new TableRow(MessagesActivity.this);
+                    TextView msg = new TextView(MessagesActivity.this);
                     msg.setText(array.get(j).get(1) + " " + array.get(j).get(0));
                     msg.setPadding(8, 0, 0, 0);
                     array.get(j).get(2);

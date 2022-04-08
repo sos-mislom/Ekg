@@ -16,33 +16,38 @@
         tools:targetApi="m">
 
         <activity
-            android:name=".Activity_main"
+            android:name=".MainActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_main"
             android:theme="@style/Theme.MyApplication.NoActionBar" />
         <activity
-            android:name=".Notes"
+            android:name=".NotesActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_note"
             android:theme="@style/Theme.MyApplication.NoActionBar" />
         <activity
-            android:name=".Diary"
+            android:name=".DiaryActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_diary"
             android:theme="@style/Theme.MyApplication.NoActionBar" />
-
         <activity
-            android:name=".Messages"
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/Theme.MyApplication.NoActionBar" />
+        <activity
+            android:name=".MessagesActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_messages"
             android:theme="@style/Theme.MyApplication.NoActionBar"
             tools:ignore="DuplicateActivity" />
         <activity
-            android:name=".Activity_log"
+            android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
