@@ -101,6 +101,7 @@ public class DiaryActivity extends Activity {
         setContentView(R.layout.activity_diary);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+        MainActivity.setInfo(getResources(), findViewById(R.id.name), findViewById(R.id.classs));
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -324,6 +325,7 @@ public class DiaryActivity extends Activity {
             }
         });
         tblayoutl.addView(btn3);
+
     }
     @SuppressLint("NonConstantResourceId")
     public boolean onNavigationItemSelected(MenuItem item) {

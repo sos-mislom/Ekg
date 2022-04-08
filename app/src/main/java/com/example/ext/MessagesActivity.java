@@ -6,7 +6,10 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -32,6 +35,7 @@ import java.util.TreeMap;
 
 public class MessagesActivity extends AppCompatActivity {
     NavigationView navigationView;
+    private AsyncTask<Void, Void, Map<String, ArrayList>> thread;
     TableLayout tblayoutl;
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -46,8 +50,9 @@ public class MessagesActivity extends AppCompatActivity {
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-        new asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        getStart();
     }
+    private void getStart(){ thread = new MessagesActivity.asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); }
     @SuppressLint("NonConstantResourceId")
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()){
@@ -128,7 +133,12 @@ public class MessagesActivity extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected Map<String, ArrayList> doInBackground(Void... params) {
-            return GetContentForMessages();
+            try {
+                return GetContentForMessages();
+            } catch (NullPointerException e) {
+                Log.e("WARNING!!!!!", e.toString());
+                return null;
+            }
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)
@@ -136,6 +146,25 @@ public class MessagesActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Map<String, ArrayList> result) {
             super.onPostExecute(result);
+            if (result == null){
+                tblayoutl = (TableLayout) findViewById(R.id.tblayout);
+                TextView warning = new TextView(MessagesActivity.this);
+                Button btn_to_restart = new Button(MessagesActivity.this);
+                TableRow row_of_restart = new TableRow(MessagesActivity.this);
+                row_of_restart.addView(warning); row_of_restart.addView(btn_to_restart);
+                tblayoutl.addView(row_of_restart);
+                warning.setText("Чет сервак барахлит или вы без инета");
+                warning.setGravity(0);
+                btn_to_restart.setText("Би пэйшнт энд трай эгейн");
+                btn_to_restart.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        thread.cancel(true);
+                        tblayoutl.removeView(row_of_restart);
+                        getStart();
+                    }
+                });
+            }else{
             tblayoutl = (TableLayout) findViewById(R.id.tblayout);
             for (String teacher: result.keySet()) {
                 TableRow row_of_msg_teacher = new TableRow(MessagesActivity.this);
@@ -159,7 +188,9 @@ public class MessagesActivity extends AppCompatActivity {
                     tbl_of_msg.addView(row_of_msg);
                 }
                 tblayoutl.addView(tbl_of_msg);
+                MainActivity.setInfo(getResources(), findViewById(R.id.name), findViewById(R.id.classs));
             }
+        }
         }
 
     }

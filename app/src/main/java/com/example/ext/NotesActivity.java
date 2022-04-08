@@ -7,9 +7,11 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -46,6 +48,7 @@ import kotlin.Pair;
 public class NotesActivity extends AppCompatActivity {
     NavigationView navigationView;
     TableLayout tblayoutl;
+    private AsyncTask<Void, Void, Map<String, ArrayList>> thread;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -62,7 +65,10 @@ public class NotesActivity extends AppCompatActivity {
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
-        new NotesActivity.asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        getStartNotesActivity();
+    }
+    private void getStartNotesActivity(){
+        thread = new NotesActivity.asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
     @SuppressLint("NonConstantResourceId")
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -162,7 +168,12 @@ public class NotesActivity extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected Map<String, ArrayList> doInBackground(Void... params) {
-            return GetContentForNotes();
+            try {
+                return GetContentForNotes();
+            } catch (NullPointerException e) {
+                Log.e("WARNING!!!!!", e.toString());
+                return null;
+            }
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)
@@ -170,6 +181,25 @@ public class NotesActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Map<String, ArrayList> result) {
             super.onPostExecute(result);
+            if (result == null){
+                tblayoutl = (TableLayout) findViewById(R.id.tblayout);
+                TextView warning = new TextView(NotesActivity.this);
+                Button btn_to_restart = new Button(NotesActivity.this);
+                TableLayout row_of_restart = new TableLayout(NotesActivity.this);
+                row_of_restart.addView(warning); row_of_restart.addView(btn_to_restart);
+                tblayoutl.addView(row_of_restart);
+                warning.setText("Чет сервак барахлит или вы без инета");
+                warning.setGravity(0);
+                btn_to_restart.setText("Би пэйшнт энд трай эгейн");
+                btn_to_restart.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        thread.cancel(true);
+                        tblayoutl.removeView(row_of_restart);
+                        getStartNotesActivity();
+                    }
+                });
+            }else{
             tblayoutl = (TableLayout) findViewById(R.id.tblayout);
 
             for (String subj: result.keySet()) {
@@ -215,6 +245,7 @@ public class NotesActivity extends AppCompatActivity {
                             .setAllCorners(CornerFamily.ROUNDED, 20)
                             .build();
                     MaterialShapeDrawable shapeDrawable2 = new MaterialShapeDrawable(shapeAppearanceModel2);
+
                     ViewCompat.setBackground(row_of_note, shapeDrawable2);
                     TableRow.LayoutParams trRowParams = new TableRow.LayoutParams();
                     trRowParams.setMargins(4, 4, 4, 4);
@@ -249,12 +280,13 @@ public class NotesActivity extends AppCompatActivity {
                     }
                     note.setText(array.get(j).get(2) + " ");
                     double finalWeight = weight;
+                    String finalDate = array.get(j).get(0);
                     String finalComment =  array.get(j).get(1);
                     note.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Toast toast = Toast.makeText(getApplicationContext(),
-                                    "Вес оценки:" + finalWeight + " Комментарий" + finalComment, Toast.LENGTH_SHORT);
+                                    "Вес оценки: " + finalWeight + " Комментарий: " + finalComment + " Дата: " + finalDate, Toast.LENGTH_SHORT);
                             toast.show();
                         }
                     });
@@ -274,13 +306,16 @@ public class NotesActivity extends AppCompatActivity {
                 average_note.setGravity(Gravity.CENTER);
                 average_note.setPadding(10, 10, 10, 10);
                 average_note.setBackgroundColor(Color.WHITE);
-                tbl_of_notes.addView(average_note);
+                tbl_of_notes.addView(average_note, 0);
 
                 // x
 
                 tbl_of_subj.addView(tbl_of_notes);
                 tblayoutl.addView(row_of_subj_name);
                 tblayoutl.addView(tbl_of_subj);
+
+                MainActivity.setInfo(getResources(), findViewById(R.id.name), findViewById(R.id.classs));
+            }
             }
         }
     }

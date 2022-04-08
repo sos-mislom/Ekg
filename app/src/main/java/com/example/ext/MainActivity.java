@@ -9,10 +9,12 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -54,12 +56,13 @@ public class MainActivity extends AppCompatActivity {
     TableLayout row_of_subj;
     TableRow row_of_date;
     TextView textView1;
-    String name;
-    String letter_of_class;
-    String num_of_class;
+    static String name;
+    static String letter_of_class;
+    static String num_of_class;
     TextView textView2;
     TableLayout row_of_day;
     static Ext globalext;
+    private AsyncTask<Void, Void, Map<String, ArrayList>> thread;
     private Ext ext;
 
 
@@ -73,8 +76,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         password = preferences.getString("password", "");
         username = preferences.getString("username", "");
-        new asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
+        getStart();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -88,6 +90,15 @@ public class MainActivity extends AppCompatActivity {
     public static Ext getExt() {
         return globalext;
     }
+    private void getStart(){ thread = new asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); }
+
+    public static void setInfo(Resources res, TextView tx_name, TextView tx_classs) {
+        String name_after_replace = String.format(res.getString(R.string.nav_header_title), MainActivity.name);
+        String classs_after_replace = String.format(res.getString(R.string.nav_header_subtitle), MainActivity.num_of_class, MainActivity.letter_of_class);
+        tx_name.setText(name_after_replace);
+        tx_classs.setText(classs_after_replace);
+    }
+
     @SuppressLint("NonConstantResourceId")
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()){
@@ -198,13 +209,37 @@ public class MainActivity extends AppCompatActivity {
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         protected Map<String, ArrayList> doInBackground(Void... params) {
-            return GetContentForActivityMain();
+            try {
+                return GetContentForActivityMain();
+            } catch (NullPointerException e) {
+                Log.e("WARNING!!!!!", e.toString());
+                return null;
+            }
         }
         @RequiresApi(api = Build.VERSION_CODES.N)
         @SuppressLint("ResourceAsColor")
         @Override
         protected void onPostExecute(Map<String, ArrayList> result) {
             super.onPostExecute(result);
+            if (result == null){
+                tblayoutl = (TableLayout) findViewById(R.id.tblayout);
+                TextView warning = new TextView(MainActivity.this);
+                Button btn_to_restart = new Button(MainActivity.this);
+                TableLayout row_of_restart = new TableLayout(MainActivity.this);
+                row_of_restart.addView(warning); row_of_restart.addView(btn_to_restart);
+                tblayoutl.addView(row_of_restart);
+                warning.setText("Чет сервак барахлит или вы без инета");
+                warning.setGravity(0);
+                btn_to_restart.setText("Би пэйшнт энд трай эгейн");
+                btn_to_restart.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        thread.cancel(true);
+                        tblayoutl.removeView(row_of_restart);
+                        getStart();
+                    }
+                });
+            }else{
             tblayoutl = (TableLayout) findViewById(R.id.tblayout);
             List<String> keys = new ArrayList<>(result.keySet());
             List<LocalDate> keys_format_date = new ArrayList<>();
@@ -246,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < array.size(); i++) {
                     row_of_subj = new TableLayout(MainActivity.this);
                     textView1 = new TextView(MainActivity.this);
-                    textView1.setText(j + ". " + array.get(i).get(0).replace('$', '"'));
+                    textView1.setText(j + ". " + array.get(i).get(0));
                     textView1.setTypeface(null, Typeface.BOLD);
                     textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP,30);
                     textView1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
@@ -273,14 +308,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 tblayoutl.addView(row_of_day);
 
-                Resources res = getResources();
-                String name_after_replace = String.format(res.getString(R.string.nav_header_title), name);
-                String classs_after_replace = String.format(res.getString(R.string.nav_header_subtitle), num_of_class, letter_of_class);
-                TextView name = findViewById(R.id.name);
-                name.setText(name_after_replace);
-                TextView classs = findViewById(R.id.classs);
-                classs.setText(classs_after_replace);
-
+                setInfo(getResources(), findViewById(R.id.name), findViewById(R.id.classs));
+            }
             }
         }
     }
