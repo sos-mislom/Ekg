@@ -242,7 +242,7 @@ public class NotesActivity extends AppCompatActivity {
                             break;
                     }
                     weight = Double.parseDouble(array.get(j).get(3));
-                    if(!array.get(j).get(2).matches("[a-zA-ZА-Яа-я]+")){
+                    if(array.get(j).get(2).matches("[0-9]")){
                         count++;
                         nominator += Integer.parseInt(array.get(j).get(2)) * weight;
                         denominator += weight;
