@@ -69,7 +69,12 @@ public class MessagesFragment extends Fragment {
     };
 
     public void setUI(Map<String, ArrayList> result){
-        final TableLayout tbl_other_content = binding.tblMessagesContent;
+        TableLayout tbl_other_content;
+        try {
+            tbl_other_content = binding.tblMessagesContent;
+        }catch (NullPointerException e){
+            tbl_other_content = new TableLayout(getContext());
+        }
         TableLayout.LayoutParams trRowParams = new TableLayout.LayoutParams();
         trRowParams.setMargins(20, 20, 20, 30);
         for (String teacher: result.keySet()) {
