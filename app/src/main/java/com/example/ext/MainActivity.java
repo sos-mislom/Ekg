@@ -1,323 +1,53 @@
 package com.example.ext;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
-import com.google.android.material.navigation.NavigationView;
-
-import org.json.JSONArray;
-import org.json.JSONException;
+import com.example.ext.api.Ext;
+import com.example.ext.databinding.ActivityMainBinding;
 
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity {
-    NavigationView navigationView;
-    TableLayout tblayoutl;
-    int j;
-    String password;
-    String username;
-    TableLayout row_of_subj;
-    TableRow row_of_date;
-    TextView textView1;
-    static String name;
-    static String letter_of_class;
-    static String num_of_class;
-    TextView textView2;
-    TableLayout row_of_day;
-    static Ext globalext;
-    private AsyncTask<Void, Void, Map<String, ArrayList>> thread;
-    private Ext ext;
+    public static String data;
+    public static Ext getExt() {
+        if (globalext == null){
+            try {
+                return new Ext("Зайцев","3MA8|ZJQ{0");
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
+        }
+        return globalext;
+    }
+    public static Ext globalext;
 
-
-    @SuppressLint("ResourceAsColor")
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        password = preferences.getString("password", "");
-        username = preferences.getString("username", "");
-        getStart();
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+        com.example.ext.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        data = preferences.getString("dairyData", "");
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.navigation_home_work,
+                R.id.navigation_messages,
+                R.id.navigation_home,
+                R.id.navigation_note,
+                R.id.navigation_dairy
+                ).build();
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        NavigationUI.setupWithNavController(binding.navView, navController);
     }
-    public static Ext getExt() {
-        return globalext;
-    }
-    private void getStart(){ thread = new asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR); }
-
-    public static void setInfo(Resources res, TextView tx_name, TextView tx_classs) {
-        String name_after_replace = String.format(res.getString(R.string.nav_header_title), MainActivity.name);
-        String classs_after_replace = String.format(res.getString(R.string.nav_header_subtitle), MainActivity.num_of_class, MainActivity.letter_of_class);
-        tx_name.setText(name_after_replace);
-        tx_classs.setText(classs_after_replace);
-    }
-
-    @SuppressLint("NonConstantResourceId")
-    public boolean onNavigationItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.nav_main:{
-                Intent mainIntent = new Intent(this, MainActivity.class);
-                startActivity(mainIntent);
-                break;
-            }
-            case R.id.nav_notes: {
-                Intent mainIntent = new Intent(this, NotesActivity.class);
-                startActivity(mainIntent);
-                break;
-            }
-            case R.id.nav_diary: {
-                Intent mainIntent = new Intent(this, DiaryActivity.class);
-                startActivity(mainIntent);
-                break;
-            }
-            case R.id.nav_messages:{
-                Intent mainIntent = new Intent(this, MessagesActivity.class);
-                startActivity(mainIntent);
-                break;
-            }
-            case R.id.nav_settings:{
-                Intent mainIntent = new Intent(this, SettingsActivity.class);
-                startActivity(mainIntent);
-                break;
-            }
-            case R.id.nav_exit:{
-                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit()
-                        .putString("password", "")
-                        .putString("username", "")
-                        .apply();
-                Intent mainIntent = new Intent(this, LoginActivity.class);
-                startActivity(mainIntent);
-                finish();
-                break;
-            }
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
-    private class asyncEXT extends AsyncTask<Void, Void, Map<String, ArrayList>> {
-        @RequiresApi(api = Build.VERSION_CODES.N)
-        private Map<String, ArrayList> GetContentForActivityMain() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                LocalDate begin_dt = LocalDate.now().with(DayOfWeek.MONDAY);
-                LocalDate end_dt = begin_dt.plusDays(5);
-                try {
-                    //Ext ext = new Ext("Зайцева","<Cb0@4F9Sx");
-                    //Ext ext = new Ext("Зайцев","3MA8|ZJQ{0");
-                    //Ext ext = new Ext("Кудряшов","Ob7]NDz79+");
-                    if (globalext != null) {
-                        ext = globalext;
-                    } else {
-                        ext = new Ext(username, password);
-                    }
-                    JSONArray dairyData = ext.GET_STUDENT_DAIRY(begin_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), end_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-                    JSONArray studentGroups = ext.GET_STUDENT_GROUPS();
-                    globalext = ext; name = ext.name;num_of_class = ext.num_of_class;letter_of_class = ext.letter_of_class;
-
-                    Map<String, ArrayList> whereIsLesson = new TreeMap();
-                    boolean curInGroup;
-                    for (int k = 0; k < dairyData.length(); k++) {
-                        curInGroup = true;
-
-                        String day = String.valueOf(dairyData.getJSONArray(k).getJSONArray(0).get(2));
-                        String month = String.valueOf((Integer.parseInt(String.valueOf(dairyData.getJSONArray(k).getJSONArray(0).get(1)))+1));
-                        if (day.length() == 1){ day = "0"+ day; }
-                        if (month.length() == 1){ month = "0"+ month; }
-
-                        String Date = day + "." + month + "." + dairyData.getJSONArray(k).getJSONArray(0).get(0);
-                        for (int n = 0; n < studentGroups.length(); n++) {
-                            if (studentGroups.getJSONArray(n).get(1).equals(dairyData.getJSONArray(k).get(2)) && studentGroups.getJSONArray(n).get(2).equals(dairyData.getJSONArray(k).get(6))){
-                                curInGroup = false;
-                                break;
-                            }
-                        }
-                        if (curInGroup || dairyData.getJSONArray(k).getInt(10) == 1){
-                            String mark = dairyData.getJSONArray(k).getString(5);
-                            if (dairyData.getJSONArray(k).get(7).toString().equals("null")){
-                                if (whereIsLesson.get(Date) == null){
-                                    whereIsLesson.put(Date, new ArrayList<>());
-                                }
-                                ArrayList<String> content = new ArrayList<>();
-                                content.add(ext.sbj_names.get(dairyData.getJSONArray(k).getInt(2))); // 0 subject name
-                                content.add(ext.teachers.get(dairyData.getJSONArray(k).getInt(9))); // 1 teacher's name
-                                String hm = "";
-                                if (!dairyData.getJSONArray(k).getString(3).equals("")){hm+=dairyData.getJSONArray(k).getString(3);}
-                                if (!dairyData.getJSONArray(k).getString(4).equals("")){hm+=" / " +dairyData.getJSONArray(k).getString(4);}
-                                content.add(hm); // 2 home work
-                                content.add(mark); // 3 mark
-                                Objects.requireNonNull(whereIsLesson.get(Date)).add(content);
-                            }
-                        }
-
-                    }
-                    return whereIsLesson;
-                } catch (JSONException | NoSuchAlgorithmException e) {
-                    e.printStackTrace(); }
-                return null;
-            }
-            return null;
-        }
-        @RequiresApi(api = Build.VERSION_CODES.N)
-        @Override
-        protected Map<String, ArrayList> doInBackground(Void... params) {
-            try {
-                return GetContentForActivityMain();
-            } catch (NullPointerException e) {
-                Log.e("WARNING!!!!!", e.toString());
-                return null;
-            }
-        }
-        @RequiresApi(api = Build.VERSION_CODES.N)
-        @SuppressLint("ResourceAsColor")
-        @Override
-        protected void onPostExecute(Map<String, ArrayList> result) {
-            super.onPostExecute(result);
-            if (result == null){
-                tblayoutl = (TableLayout) findViewById(R.id.tblayout);
-                TextView warning = new TextView(MainActivity.this);
-                Button btn_to_restart = new Button(MainActivity.this);
-                TableLayout row_of_restart = new TableLayout(MainActivity.this);
-                row_of_restart.addView(warning); row_of_restart.addView(btn_to_restart);
-                tblayoutl.addView(row_of_restart);
-                warning.setText("Чет сервак барахлит или вы без инета");
-                warning.setGravity(0);
-                btn_to_restart.setText("Би пэйшнт энд трай эгейн");
-                btn_to_restart.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        thread.cancel(true);
-                        tblayoutl.removeView(row_of_restart);
-                        getStart();
-                    }
-                });
-            }else{
-            tblayoutl = (TableLayout) findViewById(R.id.tblayout);
-            List<String> keys = new ArrayList<>(result.keySet());
-            List<LocalDate> keys_format_date = new ArrayList<>();
-            for (int i = 0; i < keys.size(); i++) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    keys_format_date.add(LocalDate.parse(keys.get(i), DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-                }
-            }
-            Collections.sort(keys_format_date);
-            keys = new ArrayList<String>();
-            for (int i = 0; i < keys_format_date.size(); i++) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    keys.add(keys_format_date.get(i).format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-                }
-            }
-            for (String date: keys) {
-                row_of_date = new TableRow(MainActivity.this);
-                TextView textView = new TextView(MainActivity.this);
-                textView.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.white));
-                textView.setPadding(4, 0, 0, 0);
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat format1 = new SimpleDateFormat("dd.MM.yyyy");
-                Date dt1 = null;
-                try {
-                    dt1 = format1.parse(date);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                @SuppressLint("SimpleDateFormat") DateFormat format2 = new SimpleDateFormat("EEEE");
-                assert dt1 != null;
-                String finalDay = format2.format(dt1);
-                textView.setText(finalDay.substring(0, 1).toUpperCase() + finalDay.substring(1) + " " + date);
-
-                row_of_date.addView(textView);
-                row_of_date.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.divider_color2));
-                tblayoutl.addView(row_of_date);
-                j = 1;
-                row_of_day = new TableLayout(MainActivity.this);
-                ArrayList<ArrayList<String>> array = result.get(date);
-                for (int i = 0; i < array.size(); i++) {
-                    row_of_subj = new TableLayout(MainActivity.this);
-                    textView1 = new TextView(MainActivity.this);
-                    textView1.setText(j + ". " + array.get(i).get(0));
-                    textView1.setTypeface(null, Typeface.BOLD);
-                    textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP,30);
-                    textView1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
-
-                    textView2 = new TextView(MainActivity.this);
-                    textView2.setVisibility(View.GONE);
-                    textView2.setText(array.get(i).get(2).replace('$', '"'));
-                    textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP,25);
-                    textView2.setPadding(10, 0, 10, 0);
-                    textView2.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
-                    TextView finalTextView = textView2;
-                    textView1.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (finalTextView.getVisibility() == View.VISIBLE){
-                                finalTextView.setVisibility(View.GONE);
-                            } else finalTextView.setVisibility(View.VISIBLE);
-                        }
-                    });
-                    row_of_subj.addView(textView1);
-                    row_of_subj.addView(textView2);
-                    row_of_day.addView(row_of_subj);
-                    j++;
-                }
-                tblayoutl.addView(row_of_day);
-
-                setInfo(getResources(), findViewById(R.id.name), findViewById(R.id.classs));
-            }
-            }
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
-    }
-
 }
