@@ -25,8 +25,7 @@ import kotlin.Pair;
 public class Ext {
     private final String username;
     private final String password;
-    private String url;
-    private String userId;
+    private final String url;
     static String name;
     static String letter_of_class;
     static String num_of_class;
@@ -34,19 +33,17 @@ public class Ext {
     private String uchYear;
     public static Map<Integer, String> sbj_names;
     public static Map<Integer, String> teachers;
-    private Post p;
+    private final Post http;
     private String uchId;
     private String cls;
-    private static Map<Integer, String> work_periods;
 
     public Ext(String username, String password) throws NoSuchAlgorithmException {
         this.url = "http://176.215.5.226:8082/";
-        this.sbj_names = new HashMap<Integer, String>();
-        this.work_periods = new HashMap<Integer, String>();
-        this.teachers = new HashMap<Integer, String>();
+        sbj_names = new HashMap<Integer, String>();
+        teachers = new HashMap<Integer, String>();
         this.username = username;
         this.password = PasswordToSHA1(password);
-        this.p = new Post(this.password, ConvertStringToUnic(this.username));
+        this.http = new Post(this.password, ConvertStringToUnic(this.username));
         try {
             AUTH();
             GET_USER_DATA();
@@ -161,7 +158,7 @@ public class Ext {
         Map<String, String> data = new HashMap<>();
         data.put("currentDate", currentDate);
         try {
-            Response r = p.post ( this.url + "act/get_uch_year", data);
+            Response r = http.post ( this.url + "act/get_uch_year", data);
             if (r == null) this.uchYear = null;
             JSONArray arr = new JSONArray(r.toString());
             this.uchYear = arr.getJSONArray(0).getString(0);
@@ -175,15 +172,15 @@ public class Ext {
         data.put("l", this.username);
         data.put("p", this.password);
         try {
-            Response r = p.post(this.url + "login", data);
+            Response r = http.post(this.url + "login", data);
             JSONArray arr = new JSONArray(r.toString());
-            this.userId = arr.getJSONArray(0).getString(0);
+            String userId = arr.getJSONArray(0).getString(0);
             this.studentId = arr.getJSONArray(0).getString(6);
             name = arr.getJSONArray(0).getString(5);
             data.clear();
-            data.put("uId", this.userId);
+            data.put("uId", userId);
             data.put("act", String.valueOf(1));
-            if (p.post(this.url + "auth", data).toString().equals("ok")) {
+            if (http.post(this.url + "auth", data).toString().equals("ok")) {
                 return new JSONArray("[ok]");
             }else {
                 return new JSONArray("[Ошибка авторизации.");
@@ -200,7 +197,7 @@ public class Ext {
         data.put("student", this.studentId);
         data.put("isGuru", "false");
         try {
-            Response r = p.post ( this.url + "act/GET_STUDENT_MESSAGES", data);
+            Response r = http.post ( this.url + "act/GET_STUDENT_MESSAGES", data);
             return RET_JSON_FORMAT(r);
         } catch (IOException e) {
             e.printStackTrace();
@@ -208,14 +205,13 @@ public class Ext {
         return null;
     }
 
-    @SuppressLint("LongLogTag")
     public JSONArray GET_JOURNAL_PERIODS_INFO(){
         Map<String, String> data = new HashMap<>();
         data.put("uchYear", this.uchYear);
         ArrayList<String> ids = new ArrayList<>();
         for (int i = 0; i < 22; i++) {ids.add("36" + RepeatStr( 4 - String.valueOf(i).length(), "0") + i);}
         try {
-            Response r = p.post( this.url + "act/GET_JOURNAL_PERIODS_INFO", data, ids);
+            Response r = http.post( this.url + "act/GET_JOURNAL_PERIODS_INFO", data, ids);
             return RET_JSON_FORMAT(r);
         } catch (IOException e) {
             e.printStackTrace();
@@ -227,7 +223,7 @@ public class Ext {
         Map<String, String> data = new HashMap<>();
         data.put("cls", this.cls);
         try {
-            Response r = p.post ( this.url + "act/GET_CLASS_PER_SP", data);
+            Response r = http.post ( this.url + "act/GET_CLASS_PER_SP", data);
             return RET_JSON_FORMAT(r);
         } catch (IOException e) {
             e.printStackTrace();
@@ -236,7 +232,7 @@ public class Ext {
     }
     public void GET_USER_DATA() {
         try {
-            Response r = p.get( this.url + "act/get_user_data");
+            Response r = http.get( this.url + "act/get_user_data");
             JSONArray arr = new JSONArray(r.toString());
             this.uchId = arr.getJSONArray(0).getString(4);
         } catch (IOException | JSONException | NullPointerException e) {
@@ -251,7 +247,7 @@ public class Ext {
         data.put("uchYear", this.uchYear);
         data.put("student", this.studentId);
         try {
-            Response r = p.post ( this.url + "act/GET_STUDENT_CLASS", data);
+            Response r = http.post ( this.url + "act/GET_STUDENT_CLASS", data);
             JSONArray arr = new JSONArray(r.toString());
             this.cls = arr.getJSONArray(0).getString(0);
             letter_of_class = arr.getJSONArray(0).getString(2);
@@ -267,7 +263,7 @@ public class Ext {
         data.put("parallelClasses", "");
         data.put("student", this.studentId);
         try {
-            Response r = p.post ( this.url + "act/GET_STUDENT_JOURNAL_DATA", data);
+            Response r = http.post ( this.url + "act/GET_STUDENT_JOURNAL_DATA", data);
             return RET_JSON_FORMAT(r);
         } catch (IOException e) {
             e.printStackTrace();
@@ -279,7 +275,7 @@ public class Ext {
         data.put("pClassesIds", "");
         data.put("cls", this.cls);
         try {
-            Response r = p.post ( this.url + "act/GET_DAIRY_CLASS_SUBJECTS", data);
+            Response r = http.post ( this.url + "act/GET_DAIRY_CLASS_SUBJECTS", data);
             return new JSONObject(r.toString());
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -296,7 +292,7 @@ public class Ext {
         data.put("end_dt", end_dt);
 
         try {
-            Response r = p.post ( this.url + "act/GET_STUDENT_DAIRY", data);
+            Response r = http.post ( this.url + "act/GET_STUDENT_DAIRY", data);
             return RET_JSON_FORMAT(r);
         } catch (IOException e) {
             e.printStackTrace();
@@ -313,7 +309,7 @@ public class Ext {
         data.put("period_end", end_dt);
 
         try {
-            Response r = p.post ( this.url + "act/GET_STUDENT_LESSONS", data);
+            Response r = http.post ( this.url + "act/GET_STUDENT_LESSONS", data);
             return RET_JSON_FORMAT(r);
         } catch (IOException e) {
             e.printStackTrace();
@@ -325,7 +321,7 @@ public class Ext {
         data.put("cls", this.cls);
         data.put("student", this.studentId);
         try {
-            Response r = p.post ( this.url + "act/GET_STUDENT_GROUPS", data);
+            Response r = http.post ( this.url + "act/GET_STUDENT_GROUPS", data);
             return new JSONArray(r.toString());
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -337,7 +333,7 @@ public class Ext {
         Hashtable edu = new Hashtable();
         data.put("cls", this.cls);
         data.put("parallelClasses", "");
-        Response r = p.post ( this.url + "act/GET_DAIRY_CLASS_SUBJECTS", data);
+        Response r = http.post ( this.url + "act/GET_DAIRY_CLASS_SUBJECTS", data);
         JSONArray arr = new JSONArray(r.toString());
         for (int i = 0; i < arr.length(); i++) {
             edu.put(arr.getJSONArray(i).getInt(0), arr.getJSONArray(i).getString(1));
@@ -346,7 +342,7 @@ public class Ext {
 
         edu = new Hashtable();
         edu.clear();
-        Response g = p.get ( this.url + "act/GET_SUBS_PERSONS_STORE_DATA");
+        Response g = http.get ( this.url + "act/GET_SUBS_PERSONS_STORE_DATA");
         JSONArray ar = new JSONArray(g.toString());
         for (int i = 0; i < ar.length(); i++) {
             edu.put(ar.getJSONArray(i).getInt(0), ar.getJSONArray(i).getString(1));
@@ -354,11 +350,11 @@ public class Ext {
         this.teachers = edu;
         edu = new Hashtable();
         edu.clear();
-        Response g2 = p.get ( this.url + "act/GET_PERIODS");
-        JSONArray a = new JSONArray(g2.toString());
-        for (int i = 0; i < a.length(); i++) {
-            edu.put(a.getJSONArray(i).getInt(0), a.getJSONArray(i).getString(1));
-        }
-        this.work_periods = edu;
+//        Response g2 = http.get ( this.url + "act/GET_PERIODS");
+//        JSONArray a = new JSONArray(g2.toString());
+//        for (int i = 0; i < a.length(); i++) {
+//            edu.put(a.getJSONArray(i).getInt(0), a.getJSONArray(i).getString(1));
+//        }
+//        this.work_periods = edu;
     }
 }

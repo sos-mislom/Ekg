@@ -19,26 +19,38 @@ import java.security.NoSuchAlgorithmException;
 
 public class MainActivity extends AppCompatActivity {
     public static String data;
+    public static Ext globalext;
+    public static MainActivity ma;
+    public static String username;
+    public static String password;
+
     public static Ext getExt() {
         if (globalext == null){
             try {
-                return new Ext("Зайцев","3MA8|ZJQ{0");
+                if (LoginActivity.username.length() > 0 && LoginActivity.password.length() > 0){
+                    globalext = new Ext(LoginActivity.username,LoginActivity.password);
+                } else{
+                    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ma);
+                    password = preferences.getString("password", "");
+                    username = preferences.getString("username", "");
+                    globalext =  new Ext(username, password);
+                }
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
         }
         return globalext;
     }
-    public static Ext globalext;
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        data = preferences.getString("dairyData", "");
         super.onCreate(savedInstanceState);
         com.example.ext.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        data = preferences.getString("dairyData", "");
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_home_work,
                 R.id.navigation_messages,

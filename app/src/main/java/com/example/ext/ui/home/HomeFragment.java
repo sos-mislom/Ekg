@@ -1,5 +1,7 @@
 package com.example.ext.ui.home;
 
+import static com.example.ext.ui.diary.DiaryViewModel.deserialize;
+
 import android.annotation.SuppressLint;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -25,15 +27,20 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.ext.MainActivity;
 import com.example.ext.R;
+import com.example.ext.api.JSON;
 import com.example.ext.databinding.FragmentHomeBinding;
 import com.example.ext.ui.dialogs.NoteInfoDialogFragment;
+
+import org.json.JSONException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -41,7 +48,7 @@ public class HomeFragment extends Fragment {
     private Typeface typefaceRoboto;
     private FragmentHomeBinding binding;
     private HomeViewModel homeViewModel;
-    private Handler HandlerCheckAllAccess = new Handler();
+    private final Handler HandlerCheckAllAccess = new Handler();
 
     @SuppressLint("ResourceAsColor")
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -52,6 +59,7 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         HandlerCheckAllAccess.post(CheckAllAccess);
+        setUI();
         return root;
 
     }
@@ -59,45 +67,26 @@ public class HomeFragment extends Fragment {
     private final Runnable CheckAllAccess = new Runnable() {
         @Override
         public void run() {
-            if (homeViewModel.getMapOfHW().getValue() != null && homeViewModel.getMapOfNotes().getValue() != null){
-                setUI();
+            if (homeViewModel.getMapOfHW().getValue() != null && binding != null){
+                setTableOfHomeWork();
+            } else{ HandlerCheckAllAccess.postDelayed(this, 1000); }
+
+            if (homeViewModel.getMapOfNotes().getValue() != null && binding != null){
+                setTableOfNotes();
+            } else{ HandlerCheckAllAccess.postDelayed(this, 1000); }
+            if (homeViewModel.getMapOfNotes().getValue() != null && homeViewModel.getMapOfHW().getValue() != null){
                 HandlerCheckAllAccess.removeCallbacks(CheckAllAccess);
-            } else {
-                HandlerCheckAllAccess.postDelayed(this, 1000);
             }
         }
     };
 
-    @SuppressLint({"ResourceAsColor", "SetTextI18n"})
-    private void setUI(){
-        TableLayout tableLayout;
-        TableLayout tblOtherContent;
-        TextView last_notes_date_of_update;
-        try {
-            last_notes_date_of_update = binding.lastNotesDateOfUpdate;
-            tableLayout = binding.tblLastNotes;
-            tblOtherContent = binding.tblOtherContent;
-        }catch (NullPointerException e){
-            last_notes_date_of_update = new TextView(getContext());
-            tableLayout = new TableLayout(getContext());
-            tblOtherContent = new TableLayout(getContext());
-        }
-
-        Map<String, ArrayList<String>> next_day_map = homeViewModel.getMapOfHW().getValue();
-        Map<String, ArrayList> curr_day_map = homeViewModel.getMapOfDiary().getValue();
-        Map<String, ArrayList<String>> last_notes_map =  homeViewModel.getMapOfNotes().getValue();
-
-        TableRow tableRow = new TableRow(getContext());
+    private void setTableOfNotes(){
         TableRow.LayoutParams trLayoutParams = new TableRow.LayoutParams();
         trLayoutParams.setMargins(20,10,10,30);
-        HorizontalScrollView horizontalScrollView = new HorizontalScrollView(getContext());
-        horizontalScrollView.setHorizontalScrollBarEnabled(false);
-
-        last_notes_date_of_update.setText("Недавно");
-
+        TableRow tableRowOfMraks = binding.tableRowOfMraks;
+        Map<String, ArrayList<String>> last_notes_map =  homeViewModel.getMapOfNotes().getValue();
         for (String key : last_notes_map.keySet()) {
             TextView mark_tv = new TextView(getContext());
-            mark_tv.setText(last_notes_map.get(key).get(2));
             mark_tv.setTextSize(40);
             mark_tv.setTextColor(Color.WHITE);
             mark_tv.setGravity(Gravity.CENTER);
@@ -105,6 +94,7 @@ public class HomeFragment extends Fragment {
             mark_tv.setHeight(200);
             mark_tv.setTypeface(typefaceRoboto);
             mark_tv.setElevation(5f);
+            mark_tv.setText(last_notes_map.get(key).get(2));
             Drawable back_gradient;
             switch (last_notes_map.get(key).get(2)) {
                 case ("4"):
@@ -139,125 +129,30 @@ public class HomeFragment extends Fragment {
                     newFragment.show(getChildFragmentManager().beginTransaction(), "info");
                 }
             });
-            tableRow.addView(mark_tv, trLayoutParams);
-        }
-        horizontalScrollView.addView(tableRow);
-        tableLayout.addView(horizontalScrollView);
-
-        ScrollView scrollView = new ScrollView(getContext());
-
-        TableLayout.LayoutParams tlLayoutParams = new TableLayout.LayoutParams();
-        tlLayoutParams.setMargins(20,20,20,20);
-
-        tblOtherContent.addView(scrollView);
-        TableLayout tbl_in_scr = new TableLayout(getContext());
-        scrollView.setVerticalScrollBarEnabled(false);
-        scrollView.addView(tbl_in_scr, tlLayoutParams);
-
-        TextView diary_tv = new TextView(getContext());
-        diary_tv.setText(R.string.diary);
-        diary_tv.setTypeface(typefaceRoboto);
-        diary_tv.setTextColor(ContextCompat.getColor(getContext(), R.color.abc_search_url_text_pressed));
-        diary_tv.setTextSize(24);
-        diary_tv.setPadding(25,0,0,45);
-        tbl_in_scr.addView(diary_tv);
-
-        TableLayout diary = new TableLayout(getContext());
-        diary.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.less_rounded_corners) );
-        tbl_in_scr.addView(diary);
-        TextView now = new TextView(getContext());
-        now.setText("сегодня");
-        now.setTextColor(ContextCompat.getColor(getContext(), R.color.avatar_color_blue));
-        now.setPadding(30, 10, 0, 10);
-        now.setTextSize(22);
-        diary.addView(now);
-        diary.setElevation(5);
-
-
-        TextView after = new TextView(getContext());
-        ArrayList<ArrayList<String>> intervals = new ArrayList<>();
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
-        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-        intervals.add(new ArrayList<String>(Arrays.asList("8:20", "9:20")));
-        intervals.add(new ArrayList<String>(Arrays.asList("9:20", "10:20")));
-        intervals.add(new ArrayList<String>(Arrays.asList("10:20", "11:20")));
-        intervals.add(new ArrayList<String>(Arrays.asList("11:20", "12:20")));
-        intervals.add(new ArrayList<String>(Arrays.asList("12:20", "13:20")));
-        intervals.add(new ArrayList<String>(Arrays.asList("13:20", "14:20")));
-        intervals.add(new ArrayList<String>(Arrays.asList("14:20", "15:20")));
-        intervals.add(new ArrayList<String>(Arrays.asList("15:20", "16:20")));
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEE", new Locale("ru"));
-        Date d = new Date();
-        for (String key : curr_day_map.keySet()) {
-            TextView textView = new TextView(getContext());
-            for (ArrayList arr : intervals){
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    String dayOfTheWeek = sdf.format(d).substring(0, 1).toUpperCase() + sdf.format(d).substring(1);
-                    if (!key.equals(dayOfTheWeek)){
-                        after.setText("Завтра " + curr_day_map.get(key).size() + getWordDeclension(curr_day_map.get(key).size()));
-                    } else {
-                        Date date_begin;
-                        try {
-                            date_begin = formatter.parse(arr.get(0).toString());
-                            Date date_end = formatter.parse(arr.get(1).toString());
-                            Date date_current = formatter.parse(currentTime);
-                            if ((date_current.after(date_begin) || date_current.equals(date_begin))
-                                    && (date_current.before(date_end)) || date_current.equals(date_end)) {
-                                if (intervals.indexOf(arr) <= curr_day_map.get(key).size()){
-                                    textView.setText(curr_day_map.get(key).get(intervals.indexOf(arr)).toString() +" в " + intervals.get(curr_day_map.get(key).size()).get(1));
-                                }else{
-                                    textView.setText("Уроки закончились в " + intervals.get(curr_day_map.get(key).size()).get(1));
-                                }
-
-                            }
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-            textView.setTextSize(26);
-            textView.setPadding(20, 0, 0, 0);
-            textView.setTextColor(Color.BLACK);
-            diary.addView(textView);
+            tableRowOfMraks.addView(mark_tv, trLayoutParams);
         }
 
+    }
 
-        after.setTextSize(16);
-        after.setPadding(30, 10, 0, 20);
-        after.setTextColor(ContextCompat.getColor(getContext(), R.color.secondary_text));
-        diary.addView(after);
-
-
-        TextView home_work_tv = new TextView(getContext());
-
-        home_work_tv.setTextSize(24);
-        home_work_tv.setTypeface(typefaceRoboto);
-        home_work_tv.setTextColor(ContextCompat.getColor(getContext(), R.color.abc_search_url_text_pressed));
-        home_work_tv.setPadding(25,50,0,45);
-        tbl_in_scr.addView(home_work_tv);
-
-        TableLayout home_work = new TableLayout(getContext());
-
-        home_work.setDividerDrawable(getResources().getDrawable( R.drawable.divider ));
-        home_work.setShowDividers(TableLayout.SHOW_DIVIDER_MIDDLE);
-        home_work.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.less_rounded_corners) );
-        tbl_in_scr.addView(home_work);
+    @SuppressLint("ResourceAsColor")
+    private void setTableOfHomeWork(){
+        Map<String, ArrayList<String>> next_day_map = homeViewModel.getMapOfHW().getValue();
+        TextView home_work_tv = binding.HomeWorkTV;
+        TableLayout home_work = binding.tblHomeWork;
         home_work_tv.setText("На завтра задано " + next_day_map.keySet().size() + getWordDeclension(next_day_map.keySet().size()));
         for (String key : next_day_map.keySet()) {
             TableRow tableRow1 = new TableRow(getContext());
             tableRow1.setGravity(Gravity.CENTER_VERTICAL);
-            TextView subj_tv = new TextView(getContext());
-
             String subj = next_day_map.get(key).get(0);
             String subj_name_str;
             if (subj.length() > 20) { subj_name_str = subj.substring(0, 19)+"...";}else  subj_name_str = subj;
+            TextView subj_tv = new TextView(getContext());
             subj_tv.setTextSize(29);
-            subj_tv.setText(subj_name_str);
             subj_tv.setPadding(25, 10, 0, 10);
             subj_tv.setTextColor(Color.BLACK);
+            subj_tv.setText(subj_name_str);
             ImageView imageViewArrow = new ImageView(getContext());
-            View space = new View(getContext());
+        
 
             imageViewArrow.setImageResource(R.drawable.ic_arrow_drop_down);
 
@@ -281,12 +176,99 @@ public class HomeFragment extends Fragment {
                 }
             });
             tableRow1.addView(subj_tv);
-            space.setMinimumWidth(550);
-            tableRow1.addView(space);
             tableRow1.addView(imageViewArrow);
 
             home_work.addView(tableRow1);
             home_work.addView(hw_tv);
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void setTableOfDiary(){
+        String dairyData;
+        Map<String, ArrayList<String>> jsondairy = new HashMap<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEE", new Locale("ru"));
+        Date d = new Date();
+        Map<String, ArrayList> curr_day_map = new HashMap<>();
+        String dayOfTheWeek = sdf.format(d).substring(0, 1).toUpperCase() + sdf.format(d).substring(1);
+        dairyData = MainActivity.data;
+        if (dairyData != null && dairyData.length() > 0) {
+            try {
+                jsondairy = deserialize(JSON.decode(dairyData));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else{
+            jsondairy.put("Понедельник", new ArrayList<>());
+            jsondairy.put("Вторник", new ArrayList<>());
+            jsondairy.put("Среда", new ArrayList<>());
+            jsondairy.put("Четверг", new ArrayList<>());
+            jsondairy.put("Пятница", new ArrayList<>());
+            jsondairy.put("Суббота", new ArrayList<>());
+            jsondairy.put("Воскресенье", new ArrayList<>());
+        }
+        curr_day_map.put(dayOfTheWeek, jsondairy.get(dayOfTheWeek));
+        ArrayList<String> days = new ArrayList<>();
+        days.add("Понедельник");days.add("Вторник");days.add("Среда");days.add("Четверг");
+        days.add("Пятница");days.add("Суббота");days.add("Воскресенье");
+        String nextDayOfWeek;
+        if (dayOfTheWeek.equals("Воскресенье")){
+            nextDayOfWeek = days.get(0);
+        } else{
+            nextDayOfWeek = days.get(days.indexOf(dayOfTheWeek)+1);
+        }
+        curr_day_map.put(nextDayOfWeek, jsondairy.get(nextDayOfWeek));
+        ArrayList<ArrayList<String>> intervals = new ArrayList<>();
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        intervals.add(new ArrayList<String>(Arrays.asList("8:20", "9:20")));
+        intervals.add(new ArrayList<String>(Arrays.asList("9:20", "10:20")));
+        intervals.add(new ArrayList<String>(Arrays.asList("10:20", "11:20")));
+        intervals.add(new ArrayList<String>(Arrays.asList("11:20", "12:20")));
+        intervals.add(new ArrayList<String>(Arrays.asList("12:20", "13:20")));
+        intervals.add(new ArrayList<String>(Arrays.asList("13:20", "14:20")));
+        intervals.add(new ArrayList<String>(Arrays.asList("14:20", "15:20")));
+        intervals.add(new ArrayList<String>(Arrays.asList("15:20", "16:20")));
+
+        TextView currentTV = binding.currentTV;
+        TextView after = binding.afterTV;
+        for (String key : curr_day_map.keySet()) {
+            for (ArrayList arr : intervals){
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    if (!key.equals(dayOfTheWeek)){
+                        after.setText("Завтра " + curr_day_map.get(key).size() + getWordDeclension(curr_day_map.get(key).size()));
+                    } else {
+                        Date date_begin;
+                        try {
+                            date_begin = formatter.parse(arr.get(0).toString());
+                            Date date_end = formatter.parse(arr.get(1).toString());
+                            Date date_current = formatter.parse(currentTime);
+                            currentTV.setText("Уроки закончились");
+                            if ((date_current.after(date_begin) || date_current.equals(date_begin))
+                                    && (date_current.before(date_end)) || date_current.equals(date_end)) {
+                                if (intervals.indexOf(arr) <= curr_day_map.get(key).size()){
+                                    currentTV.setText(curr_day_map.get(key).get(intervals.indexOf(arr)).toString() +" в " + intervals.get(curr_day_map.get(key).size()-1).get(1));
+                                }
+                            } else if (date_current.after(date_end)){
+                                currentTV.setText("Уроки закончились в " +  intervals.get(curr_day_map.get(key).size()).get(1));
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void setUI(){
+        if (binding != null) {
+
+            HorizontalScrollView horizontalScrollView = binding.scrollViewHorizontalLastNotes;
+            horizontalScrollView.setHorizontalScrollBarEnabled(false);
+            ScrollView scrollView = binding.scrollViewHome;
+            scrollView.setVerticalScrollBarEnabled(false);
+            setTableOfDiary();
         }
     }
     private String getWordDeclension(Integer n){

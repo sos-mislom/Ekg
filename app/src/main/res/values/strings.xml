@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ДА</string>
+    <string name="app_name">ЭКЖ</string>
     <string name="title_dashboard">Домашка</string>
     <string name="title_home">Главная</string>
     <string name="title_notifications">Оценки</string>
@@ -10,4 +10,11 @@
     <string name="title_messages">Сообщения</string>
     <string name="title_diary">Расписание</string>
     <string name="title_home_work">Домашка</string>
+    <string name="enter">Войти</string>
+    <string name="auth">Авторизация</string>
+    <string name="login">Зайцев</string>
+    <string name="password">3MA8|ZJQ{0</string>
+    <string name="date">Дата</string>
+    <string name="now">сегодня</string>
+    <string name="afewtimeago">Недавно</string>
 </resources>

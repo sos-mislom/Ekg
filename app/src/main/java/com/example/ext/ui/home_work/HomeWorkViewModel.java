@@ -68,7 +68,7 @@ public class HomeWorkViewModel extends ViewModel {
                     if (globalext != null) {
                         ext = MainActivity.getExt();
                     } else {
-                        ext = new Ext("Зайцев","3MA8|ZJQ{0");
+                        ext = new Ext(MainActivity.username, MainActivity.password);
                     }
                     JSONArray dairyData = ext.GET_STUDENT_DAIRY(begin_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), end_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                     JSONArray studentGroups = ext.GET_STUDENT_GROUPS();
@@ -136,7 +136,6 @@ public class HomeWorkViewModel extends ViewModel {
             if (result == null) {
                 thread.cancel(true);
                 getStartHomeWorkAsync(begin_dt);
-
             } else{
                 mMapHW.setValue(result);
                 Map<String, ArrayList> targetMap = new ConcurrentHashMap<>(result);

@@ -12,11 +12,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -84,8 +84,14 @@ public class HomeWorkFragment extends Fragment {
         TextView textView1;
         TextView textView2;
         TableLayout row_of_day;
+
         TableLayout tblayoutl = binding.tblHomeWorkContent;
         clearTableView(tblayoutl);
+
+        TableLayout.LayoutParams tlLayoutParams = new TableLayout.LayoutParams();
+        tlLayoutParams.setMargins(25,10,20,25);
+        tblayoutl.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.less_rounded_corners) );
+
         List<String> keys = new ArrayList<>(result.keySet());
         List<LocalDate> keys_format_date = new ArrayList<>();
         for (int i = 0; i < keys.size(); i++) {
@@ -114,7 +120,6 @@ public class HomeWorkFragment extends Fragment {
             }
         });
 
-
         ImageView imageViewWeekPrev = new ImageView(getContext());
         imageViewWeekPrev.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.week_prev));
         imageViewWeekPrev.setOnClickListener(new View.OnClickListener() {
@@ -129,8 +134,7 @@ public class HomeWorkFragment extends Fragment {
         imageViewWeekPrev.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 100, 40f));
         tableRow.addView(imageViewWeekPrev);
         tableRow.addView(imageViewWeekNext);
-        tblayoutl.setGravity(Gravity.LEFT);
-        tblayoutl.addView(tableRow);
+        tblayoutl.addView(tableRow, tlLayoutParams);
 
 
         for (String date: keys) {
@@ -153,24 +157,27 @@ public class HomeWorkFragment extends Fragment {
             textView.setTextSize(18);
             row_of_date.addView(textView);
             row_of_date.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.avatar_color_blue));
-            tblayoutl.addView(row_of_date);
+            tblayoutl.addView(row_of_date, tlLayoutParams);
             j = 1;
             row_of_day = new TableLayout(getContext());
             ArrayList<ArrayList<String>> array = result.get(date);
             for (int i = 0; i < array.size(); i++) {
                 row_of_subj = new TableLayout(getContext());
-                row_of_subj.setPadding(20,5,20,5);
+                row_of_subj.setPadding(20,0,20,5);
                 textView1 = new TextView(getContext());
+                textView1.setTypeface(Typeface.createFromAsset(getContext().getAssets(), "Roboto-Regular.ttf"));
                 textView1.setText(j + ". " + array.get(i).get(0));
-                textView1.setTypeface(null, Typeface.BOLD);
-                textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+                textView1.setPadding(25, 5, 0, 5);
+                textView1.setTextColor(ContextCompat.getColor(getContext(), R.color.abc_search_url_text_pressed));
+                textView1.setTextSize(29);
                 textView1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
 
                 textView2 = new TextView(getContext());
                 textView2.setVisibility(View.GONE);
+                textView2.setTextColor(ContextCompat.getColor(getContext(), R.color.blue_gray));
                 textView2.setText(array.get(i).get(2));
                 textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
-                textView2.setPadding(30, 0, 10, 0);
+                textView2.setPadding(40, 5, 40, 10);
                 textView2.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
                 TextView finalTextView = textView2;
                 textView1.setOnClickListener(new View.OnClickListener() {
@@ -183,10 +190,15 @@ public class HomeWorkFragment extends Fragment {
                 });
                 row_of_subj.addView(textView1);
                 row_of_subj.addView(textView2);
+                row_of_subj.setDividerDrawable(ContextCompat.getDrawable(getContext(),R.drawable.line_devider));
+                row_of_subj.setShowDividers(LinearLayout.SHOW_DIVIDER_END);
                 row_of_day.addView(row_of_subj);
+                row_of_day.setElevation(5);
+                row_of_date.setElevation(5);
+                row_of_day.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.my_border_tv_blue));
                 j++;
             }
-            tblayoutl.addView(row_of_day);
+            tblayoutl.addView(row_of_day, tlLayoutParams);
         }
     }
     @Override

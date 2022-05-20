@@ -55,6 +55,7 @@ public class NoteViewModel extends ViewModel {
                 try {
                     Ext ext = MainActivity.getExt();
                     Pair<LocalDate, LocalDate> dt = ext.GET_INTERVAL(false);
+                    Pair<LocalDate, LocalDate> intervals = ext.GET_INTERVAL(true);
                     JSONArray list_of_weights = ext.GET_STUDENT_LESSONS(dt.component1().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), dt.component2().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                     Log.e("list_of_weights", list_of_weights.toString());
 
@@ -77,8 +78,6 @@ public class NoteViewModel extends ViewModel {
                         home_work =list_of_weights.getJSONArray(i).getString(8);
                         id_of_all_notes.put(list_of_weights.getJSONArray(i).getInt(0), new ArrayList<>(Arrays.asList(type_of_mark, theme, home_work, weight.toString())));
                     }
-
-                    Pair<LocalDate, LocalDate> intervals = ext.GET_INTERVAL(true);
                     JSONArray journalData = ext.GET_STUDENT_JOURNAL_DATA();
                     Map<String, ArrayList> notes = new TreeMap();
                     for (int k = 0; k < journalData.length(); k++) {
