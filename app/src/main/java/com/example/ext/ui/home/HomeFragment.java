@@ -55,6 +55,7 @@ public class HomeFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
                 new ViewModelProvider(this).get(HomeViewModel.class);
+
         typefaceRoboto = Typeface.createFromAsset(getContext().getAssets(), "Roboto-Regular.ttf");
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -246,11 +247,13 @@ public class HomeFragment extends Fragment {
                             currentTV.setText("Уроки закончились");
                             if ((date_current.after(date_begin) || date_current.equals(date_begin))
                                     && (date_current.before(date_end)) || date_current.equals(date_end)) {
-                                if (intervals.indexOf(arr) <= curr_day_map.get(key).size()){
-                                    currentTV.setText(curr_day_map.get(key).get(intervals.indexOf(arr)).toString() +" в " + intervals.get(curr_day_map.get(key).size()-1).get(1));
+                                if (intervals.indexOf(arr) < curr_day_map.get(key).size()){
+                                    currentTV.setText(curr_day_map.get(key).get(intervals.indexOf(arr)).toString() +" в " + intervals.get(curr_day_map.get(key).size()).get(1));
                                 }
                             } else if (date_current.after(date_end)){
-                                currentTV.setText("Уроки закончились в " +  intervals.get(curr_day_map.get(key).size()).get(1));
+                                if (curr_day_map.get(key).size() == 0){
+                                    currentTV.setText("Уроки закончились в " +  intervals.get(curr_day_map.get(key).size()).get(1));
+                                }else currentTV.setText("Уроки закончились в " +  intervals.get(curr_day_map.get(key).size()-1).get(1));
                             }
                         } catch (ParseException e) {
                             e.printStackTrace();

@@ -1,6 +1,7 @@
 package com.example.ext.ui.note;
 
 import static com.example.ext.ConfigApiResponses.MARKS;
+import static com.example.ext.ConfigApiResponses.SUBJECT_NAMES;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
@@ -18,6 +19,7 @@ import com.example.ext.api.Ext;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -53,10 +55,11 @@ public class NoteViewModel extends ViewModel {
         private Map<String, ArrayList> GetContentForNotes() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 try {
-                    Ext ext = MainActivity.getExt();
+                    Ext ext = new Ext(MainActivity.username, MainActivity.password);
                     Pair<LocalDate, LocalDate> dt = ext.GET_INTERVAL(false);
-                    Pair<LocalDate, LocalDate> intervals = ext.GET_INTERVAL(true);
+
                     JSONArray list_of_weights = ext.GET_STUDENT_LESSONS(dt.component1().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), dt.component2().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                    Pair<LocalDate, LocalDate> intervals = ext.GET_INTERVAL(true);
                     Log.e("list_of_weights", list_of_weights.toString());
 
                     Map<Integer, ArrayList> id_of_all_notes = new TreeMap();
@@ -91,7 +94,7 @@ public class NoteViewModel extends ViewModel {
                             weight = Double.parseDouble((String) id_of_all_notes.get(id).get(3));
                         }
                         String Date = Ext.GET_DATE(journalData.getJSONArray(k).getJSONArray(3));
-                        String Subj = Ext.sbj_names.get(journalData.getJSONArray(k).getInt(4));
+                        String Subj = SUBJECT_NAMES.get(journalData.getJSONArray(k).getInt(4));
                         if (notes.get(Subj) == null) {
                             notes.put(Subj, new ArrayList<>());
                         } else {
@@ -110,7 +113,7 @@ public class NoteViewModel extends ViewModel {
                         }
                     }
                     return notes;
-                } catch (JSONException e) {
+                } catch (JSONException | NoSuchAlgorithmException e) {
                     e.printStackTrace();
                 }
                 return null;

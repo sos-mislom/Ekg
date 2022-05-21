@@ -1,7 +1,8 @@
 package com.example.ext.ui.home_work;
 
 import static com.example.ext.ConfigApiResponses.HOME_WORK;
-import static com.example.ext.MainActivity.globalext;
+import static com.example.ext.ConfigApiResponses.SUBJECT_NAMES;
+import static com.example.ext.ConfigApiResponses.TEACHERS;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
@@ -23,13 +24,12 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class HomeWorkViewModel extends ViewModel {
-    private static Ext ext;
     public static LocalDate begin_dt;
     private static LocalDate end_dt;
     private static MutableLiveData<Map<String, ArrayList>> mMapHW = new MutableLiveData<>();
@@ -65,16 +65,10 @@ public class HomeWorkViewModel extends ViewModel {
                     //Ext ext = new Ext("Зайцева","<Cb0@4F9Sx");
                     //Ext ext = new Ext("Зайцев","3MA8|ZJQ{0");
                     //Ext ext = new Ext("Кудряшов","Ob7]NDz79+");
-                    if (globalext != null) {
-                        ext = MainActivity.getExt();
-                    } else {
-                        ext = new Ext(MainActivity.username, MainActivity.password);
-                    }
-                    JSONArray dairyData = ext.GET_STUDENT_DAIRY(begin_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), end_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                    Ext ext = new Ext(MainActivity.username, MainActivity.password);
                     JSONArray studentGroups = ext.GET_STUDENT_GROUPS();
-                    globalext = ext;
-
-                    Map<String, ArrayList> whereIsLesson = new TreeMap();
+                    JSONArray dairyData = ext.GET_STUDENT_DAIRY(begin_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), end_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                    Map<String, ArrayList> whereIsLesson = new HashMap<>();
                     boolean curInGroup;
                     for (int k = 0; k < dairyData.length(); k++) {
                         curInGroup = true;
@@ -98,8 +92,8 @@ public class HomeWorkViewModel extends ViewModel {
                                     whereIsLesson.put(Date, new ArrayList<>());
                                 }
                                 ArrayList<String> content = new ArrayList<>();
-                                content.add(ext.sbj_names.get(dairyData.getJSONArray(k).getInt(2))); // 0 subject name
-                                content.add(ext.teachers.get(dairyData.getJSONArray(k).getInt(9))); // 1 teacher's name
+                                content.add(SUBJECT_NAMES.get(dairyData.getJSONArray(k).getInt(2))); // 0 subject name
+                                content.add(TEACHERS.get(dairyData.getJSONArray(k).getInt(9))); // 1 teacher's name
                                 String hm = "";
                                 if (!dairyData.getJSONArray(k).getString(3).equals("")){hm+=dairyData.getJSONArray(k).getString(3);}
                                 if (!dairyData.getJSONArray(k).getString(4).equals("")){hm+=" / " +dairyData.getJSONArray(k).getString(4);}

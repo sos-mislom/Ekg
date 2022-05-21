@@ -2,6 +2,7 @@ package com.example.ext.ui.home;
 
 import static com.example.ext.ConfigApiResponses.HOME_WORK;
 import static com.example.ext.ConfigApiResponses.MARKS;
+import static com.example.ext.ConfigApiResponses.TEACHERS;
 
 import android.os.Build;
 import android.os.Handler;
@@ -41,7 +42,7 @@ public class HomeViewModel extends ViewModel {
                         if (HOME_WORK == null && HomeWorkViewModel.thread == null) {
                             HomeWorkViewModel.getStartHomeWorkAsync();
                         }
-                        if (MARKS == null && NoteViewModel.thread == null) {
+                        if (MARKS == null && NoteViewModel.thread == null && TEACHERS != null) {
                             NoteViewModel.getStartNoteAsync();
                         }
                         if (HOME_WORK != null) {

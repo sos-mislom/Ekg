@@ -1,6 +1,8 @@
 package com.example.ext.ui.messages;
 
 import static com.example.ext.ConfigApiResponses.MESSAGES;
+import static com.example.ext.ConfigApiResponses.SUBJECT_NAMES;
+import static com.example.ext.ConfigApiResponses.TEACHERS;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
@@ -18,6 +20,7 @@ import com.example.ext.api.Ext;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,25 +39,25 @@ public class MessagesViewModel extends ViewModel {
         private Map<String, ArrayList> GetContentForMessages() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 try {
-                    Ext ext = MainActivity.getExt();
+                    Ext ext = new Ext(MainActivity.username, MainActivity.password);
 
                     JSONArray messageData = ext.GET_MESSAGES();
                     Map<String, ArrayList> messages = new TreeMap();
                     for (int k = 0; k < messageData.length(); k++) {
                         String Date = ext.GET_DATE(messageData.getJSONArray(k).getJSONArray(4));
-                        String teacher = ext.teachers.get(messageData.getJSONArray(k).getInt(1));
+                        String teacher = TEACHERS.get(messageData.getJSONArray(k).getInt(1));
                         if (messages.get(teacher) == null) {
                             messages.put(teacher, new ArrayList<>());
                         }
                         ArrayList<String> content = new ArrayList<>();
                         content.add(Date);                                                             // 0 date
                         content.add(messageData.getJSONArray(k).getString(3));                  // 1 message
-                        content.add(ext.sbj_names.get(messageData.getJSONArray(k).getInt(6))); // 2 subject name
+                        content.add(SUBJECT_NAMES.get(messageData.getJSONArray(k).getInt(6))); // 2 subject name
 
                         Objects.requireNonNull(messages.get(teacher)).add(content);
                     }
                     return messages;
-                } catch (JSONException e) {
+                } catch (JSONException | NoSuchAlgorithmException e) {
                     e.printStackTrace();
                 }
                 return null;

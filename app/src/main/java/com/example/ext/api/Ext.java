@@ -1,6 +1,13 @@
 package com.example.ext.api;
 // #2196F3
 
+import static com.example.ext.ConfigApiResponses.SUBJECT_NAMES;
+import static com.example.ext.ConfigApiResponses.TEACHERS;
+import static com.example.ext.ConfigApiResponses.cls;
+import static com.example.ext.ConfigApiResponses.studentId;
+import static com.example.ext.ConfigApiResponses.uchId;
+import static com.example.ext.ConfigApiResponses.uchYear;
+
 import android.annotation.SuppressLint;
 
 import org.json.JSONArray;
@@ -29,18 +36,11 @@ public class Ext {
     static String name;
     static String letter_of_class;
     static String num_of_class;
-    private String studentId;
-    private String uchYear;
-    public static Map<Integer, String> sbj_names;
-    public static Map<Integer, String> teachers;
+
     private final Post http;
-    private String uchId;
-    private String cls;
 
     public Ext(String username, String password) throws NoSuchAlgorithmException {
         this.url = "http://176.215.5.226:8082/";
-        sbj_names = new HashMap<Integer, String>();
-        teachers = new HashMap<Integer, String>();
         this.username = username;
         this.password = PasswordToSHA1(password);
         this.http = new Post(this.password, ConvertStringToUnic(this.username));
@@ -154,47 +154,45 @@ public class Ext {
     }
 
     public void UCH_YEAR() {
-        @SuppressLint("SimpleDateFormat") String currentDate = new SimpleDateFormat("dd.MM.yyyy").format(Calendar.getInstance().getTime());
-        Map<String, String> data = new HashMap<>();
-        data.put("currentDate", currentDate);
-        try {
-            Response r = http.post ( this.url + "act/get_uch_year", data);
-            if (r == null) this.uchYear = null;
-            JSONArray arr = new JSONArray(r.toString());
-            this.uchYear = arr.getJSONArray(0).getString(0);
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
+        if (uchYear == null){
+            @SuppressLint("SimpleDateFormat") String currentDate = new SimpleDateFormat("dd.MM.yyyy").format(Calendar.getInstance().getTime());
+            Map<String, String> data = new HashMap<>();
+            data.put("currentDate", currentDate);
+            try {
+                Response r = http.post ( this.url + "act/get_uch_year", data);
+                JSONArray arr = new JSONArray(r.toString());
+                uchYear = arr.getJSONArray(0).getString(0);
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public JSONArray AUTH() throws IOException {
-        Map<String, String> data = new HashMap<>();
-        data.put("l", this.username);
-        data.put("p", this.password);
-        try {
-            Response r = http.post(this.url + "login", data);
-            JSONArray arr = new JSONArray(r.toString());
-            String userId = arr.getJSONArray(0).getString(0);
-            this.studentId = arr.getJSONArray(0).getString(6);
-            name = arr.getJSONArray(0).getString(5);
-            data.clear();
-            data.put("uId", userId);
-            data.put("act", String.valueOf(1));
-            if (http.post(this.url + "auth", data).toString().equals("ok")) {
-                return new JSONArray("[ok]");
-            }else {
-                return new JSONArray("[Ошибка авторизации.");
+        if (studentId == null){
+            Map<String, String> data = new HashMap<>();
+            data.put("l", this.username);
+            data.put("p", this.password);
+            try {
+                Response r = http.post(this.url + "login", data);
+                JSONArray arr = new JSONArray(r.toString());
+                String userId = arr.getJSONArray(0).getString(0);
+                studentId = arr.getJSONArray(0).getString(6);
+                name = arr.getJSONArray(0).getString(5);
+                data.clear();
+                data.put("uId", userId);
+                data.put("act", "1");
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
             }
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
+            return null;
+        } return null;
     }
 
     public JSONArray GET_MESSAGES() {
         Map<String, String> data = new HashMap<>();
-        data.put("uchYear", this.uchYear);
-        data.put("student", this.studentId);
+        data.put("uchYear", uchYear);
+        data.put("student", studentId);
         data.put("isGuru", "false");
         try {
             Response r = http.post ( this.url + "act/GET_STUDENT_MESSAGES", data);
@@ -205,9 +203,10 @@ public class Ext {
         return null;
     }
 
+    @SuppressLint("LongLogTag")
     public JSONArray GET_JOURNAL_PERIODS_INFO(){
         Map<String, String> data = new HashMap<>();
-        data.put("uchYear", this.uchYear);
+        data.put("uchYear", uchYear);
         ArrayList<String> ids = new ArrayList<>();
         for (int i = 0; i < 22; i++) {ids.add("36" + RepeatStr( 4 - String.valueOf(i).length(), "0") + i);}
         try {
@@ -221,7 +220,7 @@ public class Ext {
 
     private JSONArray GET_CLASS_PER_SP(){
         Map<String, String> data = new HashMap<>();
-        data.put("cls", this.cls);
+        data.put("cls", cls);
         try {
             Response r = http.post ( this.url + "act/GET_CLASS_PER_SP", data);
             return RET_JSON_FORMAT(r);
@@ -231,37 +230,41 @@ public class Ext {
         return null;
     }
     public void GET_USER_DATA() {
-        try {
-            Response r = http.get( this.url + "act/get_user_data");
-            JSONArray arr = new JSONArray(r.toString());
-            this.uchId = arr.getJSONArray(0).getString(4);
-        } catch (IOException | JSONException | NullPointerException e) {
-            e.printStackTrace();
+        if (uchId == null){
+            try {
+                Response r = http.get( this.url + "act/get_user_data");
+                JSONArray arr = new JSONArray(r.toString());
+                uchId = arr.getJSONArray(0).getString(4);
+            } catch (IOException | JSONException | NullPointerException e) {
+                e.printStackTrace();
+            }
         }
     }
     public void GET_STUDENT_CLASS() {
-        @SuppressLint("SimpleDateFormat") String currentDate = new SimpleDateFormat("dd.MM.yyyy").format(Calendar.getInstance().getTime());
-        Map<String, String> data = new HashMap<>();
-        data.put("currentDate", currentDate);
-        data.put("uchId", this.uchId);
-        data.put("uchYear", this.uchYear);
-        data.put("student", this.studentId);
-        try {
-            Response r = http.post ( this.url + "act/GET_STUDENT_CLASS", data);
-            JSONArray arr = new JSONArray(r.toString());
-            this.cls = arr.getJSONArray(0).getString(0);
-            letter_of_class = arr.getJSONArray(0).getString(2);
-            num_of_class = arr.getJSONArray(0).getString(1);
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
+        if (cls == null){
+            @SuppressLint("SimpleDateFormat") String currentDate = new SimpleDateFormat("dd.MM.yyyy").format(Calendar.getInstance().getTime());
+            Map<String, String> data = new HashMap<>();
+            data.put("currentDate", currentDate);
+            data.put("uchId", uchId);
+            data.put("uchYear", uchYear);
+            data.put("student", studentId);
+            try {
+                Response r = http.post ( this.url + "act/GET_STUDENT_CLASS", data);
+                JSONArray arr = new JSONArray(r.toString());
+                cls = arr.getJSONArray(0).getString(0);
+                letter_of_class = arr.getJSONArray(0).getString(2);
+                num_of_class = arr.getJSONArray(0).getString(1);
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public JSONArray GET_STUDENT_JOURNAL_DATA() {
         Map<String, String> data = new HashMap<>();
-        data.put("cls", this.cls);
+        data.put("cls", cls);
         data.put("parallelClasses", "");
-        data.put("student", this.studentId);
+        data.put("student", studentId);
         try {
             Response r = http.post ( this.url + "act/GET_STUDENT_JOURNAL_DATA", data);
             return RET_JSON_FORMAT(r);
@@ -273,7 +276,7 @@ public class Ext {
     public JSONObject GET_DAIRY_CLASS_SUBJECTS() {
         Map<String, String> data = new HashMap<>();
         data.put("pClassesIds", "");
-        data.put("cls", this.cls);
+        data.put("cls", cls);
         try {
             Response r = http.post ( this.url + "act/GET_DAIRY_CLASS_SUBJECTS", data);
             return new JSONObject(r.toString());
@@ -284,10 +287,10 @@ public class Ext {
     }
     public JSONArray GET_STUDENT_DAIRY(String begin_dt, String end_dt) {
         Map<String, String> data = new HashMap<>();
-        data.put("cls", this.cls);
+        data.put("cls", cls);
         data.put("parallelClasses", "");
-        data.put("uchYear", this.uchYear);
-        data.put("student", this.studentId);
+        data.put("uchYear", uchYear);
+        data.put("student", studentId);
         data.put("begin_dt", begin_dt);
         data.put("end_dt", end_dt);
 
@@ -301,10 +304,10 @@ public class Ext {
     }
     public JSONArray GET_STUDENT_LESSONS(String begin_dt, String end_dt) {
         Map<String, String> data = new HashMap<>();
-        data.put("cls", this.cls);
+        data.put("cls", cls);
         data.put("parallelClasses", "");
-        data.put("uchYear", this.uchYear);
-        data.put("student", this.studentId);
+        data.put("uchYear", uchYear);
+        data.put("student", studentId);
         data.put("period_begin", begin_dt);
         data.put("period_end", end_dt);
 
@@ -318,8 +321,8 @@ public class Ext {
     }
     public JSONArray GET_STUDENT_GROUPS() {
         Map<String, String> data = new HashMap<>();
-        data.put("cls", this.cls);
-        data.put("student", this.studentId);
+        data.put("cls", cls);
+        data.put("student", studentId);
         try {
             Response r = http.post ( this.url + "act/GET_STUDENT_GROUPS", data);
             return new JSONArray(r.toString());
@@ -328,28 +331,31 @@ public class Ext {
         }
         return null;
     }
-    public void GET_NECESSARY_DICTS() throws IOException, JSONException {
-        Map<String, String> data = new HashMap<>();
-        Hashtable edu = new Hashtable();
-        data.put("cls", this.cls);
-        data.put("parallelClasses", "");
-        Response r = http.post ( this.url + "act/GET_DAIRY_CLASS_SUBJECTS", data);
-        JSONArray arr = new JSONArray(r.toString());
-        for (int i = 0; i < arr.length(); i++) {
-            edu.put(arr.getJSONArray(i).getInt(0), arr.getJSONArray(i).getString(1));
-        }
-        this.sbj_names = edu;
 
-        edu = new Hashtable();
-        edu.clear();
-        Response g = http.get ( this.url + "act/GET_SUBS_PERSONS_STORE_DATA");
-        JSONArray ar = new JSONArray(g.toString());
-        for (int i = 0; i < ar.length(); i++) {
-            edu.put(ar.getJSONArray(i).getInt(0), ar.getJSONArray(i).getString(1));
+    public void GET_NECESSARY_DICTS() throws IOException, JSONException {
+        if (SUBJECT_NAMES == null){
+            Map<String, String> data = new HashMap<>();
+            Hashtable edu = new Hashtable();
+            data.put("cls", cls);
+            data.put("parallelClasses", "");
+            Response r = http.post ( this.url + "act/GET_DAIRY_CLASS_SUBJECTS", data);
+            JSONArray arr = new JSONArray(r.toString());
+            for (int i = 0; i < arr.length(); i++) {
+                edu.put(arr.getJSONArray(i).getInt(0), arr.getJSONArray(i).getString(1));
+            }
+            SUBJECT_NAMES = edu;
         }
-        this.teachers = edu;
-        edu = new Hashtable();
-        edu.clear();
+
+        if (TEACHERS == null){
+            Hashtable edu_teachers = new Hashtable();
+            Response g = http.get ( this.url + "act/GET_SUBS_PERSONS_STORE_DATA");
+            JSONArray ar = new JSONArray(g.toString());
+            for (int i = 0; i < ar.length(); i++) {
+                edu_teachers.put(ar.getJSONArray(i).getInt(0), ar.getJSONArray(i).getString(1));
+            }
+            TEACHERS = edu_teachers;
+        }
+
 //        Response g2 = http.get ( this.url + "act/GET_PERIODS");
 //        JSONArray a = new JSONArray(g2.toString());
 //        for (int i = 0; i < a.length(); i++) {
