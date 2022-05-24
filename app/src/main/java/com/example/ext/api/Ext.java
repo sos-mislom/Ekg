@@ -168,7 +168,7 @@ public class Ext {
         }
     }
 
-    public JSONArray AUTH() throws IOException {
+    public String AUTH() throws IOException {
         if (studentId == null){
             Map<String, String> data = new HashMap<>();
             data.put("l", this.username);
@@ -182,11 +182,12 @@ public class Ext {
                 data.clear();
                 data.put("uId", userId);
                 data.put("act", "1");
+                return "ok";
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return null;
-        } return null;
+        } return "ok";
     }
 
     public JSONArray GET_MESSAGES() {

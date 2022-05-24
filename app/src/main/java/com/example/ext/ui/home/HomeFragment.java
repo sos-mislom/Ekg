@@ -49,6 +49,7 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private HomeViewModel homeViewModel;
     private final Handler HandlerCheckAllAccess = new Handler();
+    private boolean isHomeWorkSet;
 
     @SuppressLint("ResourceAsColor")
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -60,6 +61,7 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         HandlerCheckAllAccess.post(CheckAllAccess);
+        isHomeWorkSet = false;
         setUI();
         return root;
 
@@ -137,50 +139,53 @@ public class HomeFragment extends Fragment {
 
     @SuppressLint("ResourceAsColor")
     private void setTableOfHomeWork(){
-        Map<String, ArrayList<String>> next_day_map = homeViewModel.getMapOfHW().getValue();
-        TextView home_work_tv = binding.HomeWorkTV;
-        TableLayout home_work = binding.tblHomeWork;
-        home_work_tv.setText("На завтра задано " + next_day_map.keySet().size() + getWordDeclension(next_day_map.keySet().size()));
-        for (String key : next_day_map.keySet()) {
-            TableRow tableRow1 = new TableRow(getContext());
-            tableRow1.setGravity(Gravity.CENTER_VERTICAL);
-            String subj = next_day_map.get(key).get(0);
-            String subj_name_str;
-            if (subj.length() > 20) { subj_name_str = subj.substring(0, 19)+"...";}else  subj_name_str = subj;
-            TextView subj_tv = new TextView(getContext());
-            subj_tv.setTextSize(29);
-            subj_tv.setPadding(25, 10, 0, 10);
-            subj_tv.setTextColor(Color.BLACK);
-            subj_tv.setText(subj_name_str);
-            ImageView imageViewArrow = new ImageView(getContext());
-        
+        if (isHomeWorkSet){
+            Map<String, ArrayList<String>> next_day_map = homeViewModel.getMapOfHW().getValue();
+            TextView home_work_tv = binding.HomeWorkTV;
+            TableLayout home_work = binding.tblHomeWork;
+            home_work_tv.setText("На завтра задано " + next_day_map.keySet().size() + getWordDeclension(next_day_map.keySet().size()));
+            for (String key : next_day_map.keySet()) {
+                TableRow tableRow1 = new TableRow(getContext());
+                tableRow1.setGravity(Gravity.CENTER_VERTICAL);
+                String subj = next_day_map.get(key).get(0);
+                String subj_name_str;
+                if (subj.length() > 20) { subj_name_str = subj.substring(0, 19)+"...";}else  subj_name_str = subj;
+                TextView subj_tv = new TextView(getContext());
+                subj_tv.setTextSize(29);
+                subj_tv.setPadding(25, 10, 0, 10);
+                subj_tv.setTextColor(Color.BLACK);
+                subj_tv.setText(subj_name_str);
+                ImageView imageViewArrow = new ImageView(getContext());
 
-            imageViewArrow.setImageResource(R.drawable.ic_arrow_drop_down);
 
-            TextView hw_tv = new TextView(getContext());
-            hw_tv.setVisibility(View.GONE);
-            hw_tv.setTextColor(R.color.blue_gray);
-            hw_tv.setText(next_day_map.get(key).get(2));
-            hw_tv.setTextSize(TypedValue.COMPLEX_UNIT_SP,25);
-            hw_tv.setPadding(40, 10, 40, 15);
-            hw_tv.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
-            tableRow1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (hw_tv.getVisibility() == View.VISIBLE){
-                        hw_tv.setVisibility(View.GONE);
-                        imageViewArrow.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_arrow_drop_down));
-                    } else {
-                        imageViewArrow.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_arrow_drop_up));
-                        hw_tv.setVisibility(View.VISIBLE);
+                imageViewArrow.setImageResource(R.drawable.ic_arrow_drop_down);
+
+                TextView hw_tv = new TextView(getContext());
+                hw_tv.setVisibility(View.GONE);
+                hw_tv.setTextColor(R.color.blue_gray);
+                hw_tv.setText(next_day_map.get(key).get(2));
+                hw_tv.setTextSize(TypedValue.COMPLEX_UNIT_SP,25);
+                hw_tv.setPadding(40, 10, 40, 15);
+                hw_tv.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
+                tableRow1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (hw_tv.getVisibility() == View.VISIBLE){
+                            hw_tv.setVisibility(View.GONE);
+                            imageViewArrow.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_arrow_drop_down));
+                        } else {
+                            imageViewArrow.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_arrow_drop_up));
+                            hw_tv.setVisibility(View.VISIBLE);
+                        }
                     }
-                }
-            });
-            tableRow1.addView(subj_tv);
-            tableRow1.addView(imageViewArrow);
+                });
+                tableRow1.addView(subj_tv);
+                tableRow1.addView(imageViewArrow);
 
-            home_work.addView(tableRow1);
-            home_work.addView(hw_tv);
+                home_work.addView(tableRow1);
+                home_work.addView(hw_tv);
+            }
+            isHomeWorkSet = true;
         }
     }
 
@@ -248,14 +253,15 @@ public class HomeFragment extends Fragment {
                             if ((date_current.after(date_begin) || date_current.equals(date_begin))
                                     && (date_current.before(date_end)) || date_current.equals(date_end)) {
                                 if (intervals.indexOf(arr) < curr_day_map.get(key).size()){
-                                    currentTV.setText(curr_day_map.get(key).get(intervals.indexOf(arr)).toString() +" в " + intervals.get(curr_day_map.get(key).size()).get(1));
+                                    currentTV.setText(curr_day_map.get(key).get(intervals.indexOf(arr)-1).toString() +" в " + intervals.get(curr_day_map.get(key).size()).get(1));
                                 }
                             } else if (date_current.after(date_end)){
                                 if (curr_day_map.get(key).size() == 0){
                                     currentTV.setText("Уроки закончились в " +  intervals.get(curr_day_map.get(key).size()).get(1));
                                 }else currentTV.setText("Уроки закончились в " +  intervals.get(curr_day_map.get(key).size()-1).get(1));
                             }
-                        } catch (ParseException e) {
+                        } catch (ParseException | IndexOutOfBoundsException e) {
+                            currentTV.setText("Уроки закончились");
                             e.printStackTrace();
                         }
                     }

@@ -46,7 +46,7 @@ public class HomeViewModel extends ViewModel {
                             NoteViewModel.getStartNoteAsync();
                         }
                         if (HOME_WORK != null) {
-                            String next_day = LocalDate.now().plusDays(3).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+                            String next_day = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
                             List<String> keys = new ArrayList<>(HOME_WORK.keySet());
                             List<LocalDate> keys_format_date = new ArrayList<>();
                             for (int i = 0; i < keys.size(); i++) {

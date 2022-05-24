@@ -81,8 +81,8 @@ public class HomeWorkFragment extends Fragment {
         int j;
         TableLayout row_of_subj;
         TableRow row_of_date;
-        TextView textView1;
-        TextView textView2;
+        TextView nameOfSubjTV;
+        TextView homeWorkContentTV;
         TableLayout row_of_day;
 
         TableLayout tblayoutl = binding.tblHomeWorkContent;
@@ -139,9 +139,9 @@ public class HomeWorkFragment extends Fragment {
 
         for (String date: keys) {
             row_of_date = new TableRow(getContext());
-            TextView textView = new TextView(getContext());
-            textView.setTextColor(ContextCompat.getColor(getContext(), R.color.ads_details_header_background));
-            textView.setPadding(4, 0, 0, 0);
+            TextView dateOfWeekTV = new TextView(getContext());
+            dateOfWeekTV.setTextColor(ContextCompat.getColor(getContext(), R.color.ads_details_header_background));
+            dateOfWeekTV.setPadding(4, 0, 0, 0);
             @SuppressLint("SimpleDateFormat") SimpleDateFormat format1 = new SimpleDateFormat("dd.MM.yyyy");
             Date dt1 = null;
             try {
@@ -152,10 +152,10 @@ public class HomeWorkFragment extends Fragment {
             @SuppressLint("SimpleDateFormat") DateFormat format2 = new SimpleDateFormat("EEEE");
             assert dt1 != null;
             String finalDay = format2.format(dt1);
-            textView.setText(finalDay.substring(0, 1).toUpperCase() + finalDay.substring(1) + " " + date);
+            dateOfWeekTV.setText(finalDay.substring(0, 1).toUpperCase() + finalDay.substring(1) + " " + date);
             row_of_date.setPadding(10,0,0,0);
-            textView.setTextSize(18);
-            row_of_date.addView(textView);
+            dateOfWeekTV.setTextSize(18);
+            row_of_date.addView(dateOfWeekTV);
             row_of_date.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.avatar_color_blue));
             tblayoutl.addView(row_of_date, tlLayoutParams);
             j = 1;
@@ -164,23 +164,23 @@ public class HomeWorkFragment extends Fragment {
             for (int i = 0; i < array.size(); i++) {
                 row_of_subj = new TableLayout(getContext());
                 row_of_subj.setPadding(20,0,20,5);
-                textView1 = new TextView(getContext());
-                textView1.setTypeface(Typeface.createFromAsset(getContext().getAssets(), "Roboto-Regular.ttf"));
-                textView1.setText(j + ". " + array.get(i).get(0));
-                textView1.setPadding(25, 5, 0, 5);
-                textView1.setTextColor(ContextCompat.getColor(getContext(), R.color.abc_search_url_text_pressed));
-                textView1.setTextSize(29);
-                textView1.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
+                nameOfSubjTV = new TextView(getContext());
+                nameOfSubjTV.setTypeface(Typeface.createFromAsset(getContext().getAssets(), "Roboto-Regular.ttf"));
+                nameOfSubjTV.setText(j + ". " + array.get(i).get(0));
+                nameOfSubjTV.setPadding(25, 5, 0, 5);
+                nameOfSubjTV.setTextColor(ContextCompat.getColor(getContext(), R.color.abc_search_url_text_pressed));
+                nameOfSubjTV.setTextSize(29);
+                nameOfSubjTV.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
 
-                textView2 = new TextView(getContext());
-                textView2.setVisibility(View.GONE);
-                textView2.setTextColor(ContextCompat.getColor(getContext(), R.color.blue_gray));
-                textView2.setText(array.get(i).get(2));
-                textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
-                textView2.setPadding(40, 5, 40, 10);
-                textView2.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
-                TextView finalTextView = textView2;
-                textView1.setOnClickListener(new View.OnClickListener() {
+                homeWorkContentTV = new TextView(getContext());
+                homeWorkContentTV.setVisibility(View.GONE);
+                homeWorkContentTV.setTextColor(ContextCompat.getColor(getContext(), R.color.blue_gray));
+                homeWorkContentTV.setText(array.get(i).get(2));
+                homeWorkContentTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+                homeWorkContentTV.setPadding(40, 5, 40, 10);
+                homeWorkContentTV.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));
+                TextView finalTextView = homeWorkContentTV;
+                nameOfSubjTV.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (finalTextView.getVisibility() == View.VISIBLE) {
@@ -188,8 +188,8 @@ public class HomeWorkFragment extends Fragment {
                         } else finalTextView.setVisibility(View.VISIBLE);
                     }
                 });
-                row_of_subj.addView(textView1);
-                row_of_subj.addView(textView2);
+                row_of_subj.addView(nameOfSubjTV);
+                row_of_subj.addView(homeWorkContentTV);
                 row_of_subj.setDividerDrawable(ContextCompat.getDrawable(getContext(),R.drawable.line_devider));
                 row_of_subj.setShowDividers(LinearLayout.SHOW_DIVIDER_END);
                 row_of_day.addView(row_of_subj);

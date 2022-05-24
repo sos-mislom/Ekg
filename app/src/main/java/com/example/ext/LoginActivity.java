@@ -14,9 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.ext.api.Ext;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
@@ -35,7 +32,6 @@ public class LoginActivity extends AppCompatActivity {
         passwordFromLay = (EditText) findViewById(R.id.password);
         logInBtn = (Button) findViewById(R.id.enter);
         logTview = (TextView) findViewById(R.id.auth);
-
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         password = preferences.getString("password", "");
         username = preferences.getString("username", "");
@@ -60,39 +56,31 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... params) {
             Ext ext;
-            String result = "";
+            String confirm = null;
             try {
                 ext = new Ext(username, password);
-                JSONArray confirm = ext.AUTH();
-                result = confirm.getString(0);
-            } catch (NoSuchAlgorithmException | IOException | JSONException | NullPointerException e) {
+                confirm = ext.AUTH();
+            } catch (NoSuchAlgorithmException | IOException | NullPointerException e) {
                 e.printStackTrace();
             }
-            return result;
+            return confirm;
         }
 
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            if (result.equals("ok")){
-                PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit()
-                        .putString("password", password)
-                        .putString("username", username)
-                        .apply();
-                logTview.setText("Успех");
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
-            else if (result.equals("Неправильный логин и/или пароль.")){
-                logTview.setText("Неправильный логин и/или пароль.");
-            }
-            else if (result.equals("Ошибка авторизации.")){
-                logTview.setText("Ошибка авторизации.");
-            }
-            else {
-                logTview.setText("Ошибка загрузки данных. Нажмите еще раз");
-            }
+            if (result != null){
+                if (result.equals("ok")){
+                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit()
+                            .putString("password", password)
+                            .putString("username", username)
+                            .apply();
+                    logTview.setText("Успех");
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }logTview.setText("Ошибка загрузки данных с сервера. Трай эгейн");
         }
     }
 }

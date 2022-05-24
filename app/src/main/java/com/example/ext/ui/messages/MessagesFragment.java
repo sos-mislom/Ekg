@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,13 +24,11 @@ import com.example.ext.databinding.FragmentMessagesBinding;
 import com.example.ext.ui.note.NoteViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 
 public class MessagesFragment extends Fragment {
-    private Handler HandlerCheckAllAccess = new Handler();
+    private final Handler HandlerCheckAllAccess = new Handler();
     private MessagesViewModel notificationsViewModel;
     private FragmentMessagesBinding binding;
 
@@ -38,7 +37,6 @@ public class MessagesFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentMessagesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
         if (MESSAGES == null){
             notificationsViewModel =
                     new ViewModelProvider(this).get(MessagesViewModel.class);
@@ -100,24 +98,28 @@ public class MessagesFragment extends Fragment {
                     }
 
                     String message = array.get(j).get(1);
-                    String str ="";
-                    if(message.length() >= 45) {
-                        int total = message.length() / 45;
-                        List<String> arr = new ArrayList<>();
-                        for (int i = 0; i < total; i++) {
-                            arr.add(message.substring(45*i, 45+45*i));
-                        }
-                        arr.add(message.substring(45*total));
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            str = arr.stream()
-                                    .map(String::valueOf)
-                                    .collect(Collectors.joining("\n"));
-                        }
-                    } else {
-                        str = str+ message;
-                    }
+//                    String str ="";
+//                    if(message.length() >= 45) {
+//                        int total = message.length() / 45;
+//                        List<String> arr = new ArrayList<>();
+//                        for (int i = 0; i < total; i++) {
+//                            arr.add(message.substring(45*i, 45+45*i));
+//                        }
+//                        arr.add(message.substring(45*total));
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                            str = arr.stream()
+//                                    .map(String::valueOf)
+//                                    .collect(Collectors.joining("\n"));
+//                        }
+//                    } else {
+//                        str = str+ message;
+//                    }
                     TextView msg = new TextView(getContext());
-                    msg.setText(str);
+                    msg.setText(message);
+                    msg.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+                    msg.setPadding(40, 5, 40, 10);
+                    msg.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                            TableRow.LayoutParams.WRAP_CONTENT, 1f));
                     msg.setPadding(15, 10, 15, 10);
                     msg.setTextSize(17);
 
