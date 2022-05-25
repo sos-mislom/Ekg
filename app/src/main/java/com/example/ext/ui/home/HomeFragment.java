@@ -61,7 +61,7 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         HandlerCheckAllAccess.post(CheckAllAccess);
-        isHomeWorkSet = false;
+        isHomeWorkSet = true;
         setUI();
         return root;
 
@@ -185,7 +185,7 @@ public class HomeFragment extends Fragment {
                 home_work.addView(tableRow1);
                 home_work.addView(hw_tv);
             }
-            isHomeWorkSet = true;
+            isHomeWorkSet = false;
         }
     }
 
