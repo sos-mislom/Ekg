@@ -6,11 +6,16 @@
         <entry key="..\:/Users/Student/Desktop/SamsungIT/Ext-master/app/src/main/res/layout/activity_main.xml" value="0.3625" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.29739583333333336" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable/button.xml" value="0.290625" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable/divider.xml" value="0.1" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable/ic_clock_black_24dp.xml" value="0.1025" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.1" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable/ic_launcher_background.xml" value="0.290625" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable/ic_menu_camera.xml" value="0.31354166666666666" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable/ic_menu_gallery.xml" value="0.31354166666666666" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable/ic_menu_slideshow.xml" value="0.31354166666666666" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.1" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable/less_rounded_corners.xml" value="0.1" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable/less_rounded_corners_transp.xml" value="0.1" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable/line_devider.xml" value="0.1" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable/my_border_tv.xml" value="0.1" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/drawable/my_border_tv_blue.xml" value="0.1" />
@@ -38,17 +43,18 @@
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/layout/fragment_diary.xml" value="0.29739583333333336" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/layout/fragment_gallery.xml" value="0.2515625" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/layout/fragment_home.xml" value="0.28125" />
-        <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/layout/fragment_home_work.xml" value="0.13451086956521738" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/layout/fragment_home_work.xml" value="0.22" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/layout/fragment_messages.xml" value="0.16302083333333334" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/layout/fragment_note.xml" value="0.302536231884058" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/layout/fragment_notes.xml" value="0.29739583333333336" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/layout/fragment_slideshow.xml" value="0.28125" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/layout/item_main.xml" value="0.15942028985507245" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/layout/nav_header_activity_after_log2.xml" value="0.22784810126582278" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/layout/nav_header_activity_main.xml" value="0.24739583333333334" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/menu/activity_after_log2.xml" value="0.28125" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/menu/activity_main.xml" value="0.24739583333333334" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/menu/activity_main_drawer.xml" value="0.28125" />
-        <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/menu/bottom_nav_menu.xml" value="0.3390625" />
+        <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/menu/bottom_nav_menu.xml" value="0.1" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.29739583333333336" />
         <entry key="..\:/Users/User/AndroidStudioProjects/Ext/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.29739583333333336" />
         <entry key="..\:/Users/User/AndroidStudioProjects/MyApplication/app/src/main/res/layout/activity_main.xml" value="0.22" />

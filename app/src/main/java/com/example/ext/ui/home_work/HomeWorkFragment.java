@@ -25,7 +25,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.ext.R;
 import com.example.ext.databinding.FragmentHomeWorkBinding;
@@ -42,17 +41,18 @@ import java.util.List;
 import java.util.Map;
 
 public class HomeWorkFragment extends Fragment {
-    private Handler HandlerCheckAllAccess = new Handler();
+    private final Handler HandlerCheckAllAccess = new Handler();
     private FragmentHomeWorkBinding binding;
-    private HomeWorkViewModel notificationsViewModel;
+    ImageView imageViewWeekNext;
+    ImageView imageViewWeekPrev;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeWorkBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        imageViewWeekNext = binding.getRoot().findViewById(R.id.imageButton2);
+        imageViewWeekPrev = binding.getRoot().findViewById(R.id.imageButton3);
         if (HOME_WORK == null){
-            notificationsViewModel =
-                    new ViewModelProvider(this).get(HomeWorkViewModel.class);
             HandlerCheckAllAccess.post(CheckAllAccess);
             return root;
         } else {
@@ -79,6 +79,7 @@ public class HomeWorkFragment extends Fragment {
 
     public void setUI(Map<String, ArrayList> result){
         int j;
+
         TableLayout row_of_subj;
         TableRow row_of_date;
         TextView nameOfSubjTV;
@@ -89,8 +90,8 @@ public class HomeWorkFragment extends Fragment {
         clearTableView(tblayoutl);
 
         TableLayout.LayoutParams tlLayoutParams = new TableLayout.LayoutParams();
-        tlLayoutParams.setMargins(25,10,20,25);
-        tblayoutl.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.less_rounded_corners) );
+        tlLayoutParams.setMargins(25,10,20,30);
+        tblayoutl.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.less_rounded_corners));
 
         List<String> keys = new ArrayList<>(result.keySet());
         List<LocalDate> keys_format_date = new ArrayList<>();
@@ -107,8 +108,6 @@ public class HomeWorkFragment extends Fragment {
             }
         }
 
-        ImageView imageViewWeekNext = new ImageView(getContext());
-        imageViewWeekNext.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.week_next));
 
         imageViewWeekNext.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -120,8 +119,8 @@ public class HomeWorkFragment extends Fragment {
             }
         });
 
-        ImageView imageViewWeekPrev = new ImageView(getContext());
-        imageViewWeekPrev.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.week_prev));
+
+
         imageViewWeekPrev.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
@@ -130,12 +129,6 @@ public class HomeWorkFragment extends Fragment {
                 HandlerCheckAllAccess.post(CheckAllAccess);
             }
         });
-        TableRow tableRow = new TableRow(getContext());
-        imageViewWeekPrev.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 100, 40f));
-        tableRow.addView(imageViewWeekPrev);
-        tableRow.addView(imageViewWeekNext);
-        tblayoutl.addView(tableRow, tlLayoutParams);
-
 
         for (String date: keys) {
             row_of_date = new TableRow(getContext());

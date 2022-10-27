@@ -1,8 +1,9 @@
 package com.example.ext.ui.messages;
 
 import static com.example.ext.ConfigApiResponses.MESSAGES;
+import static com.example.ext.ui.messages.MessagesViewModel.IfmMapMessagesNotNull;
 
-import android.os.AsyncTask;
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,51 +18,46 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.ext.R;
 import com.example.ext.databinding.FragmentMessagesBinding;
-import com.example.ext.ui.note.NoteViewModel;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 
 public class MessagesFragment extends Fragment {
-    private final Handler HandlerCheckAllAccess = new Handler();
-    private MessagesViewModel notificationsViewModel;
     private FragmentMessagesBinding binding;
+    private final Handler HandlerCheckAllAccess = new Handler();
 
 
+    @SuppressLint("NewApi")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentMessagesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         if (MESSAGES == null){
-            notificationsViewModel =
-                    new ViewModelProvider(this).get(MessagesViewModel.class);
             HandlerCheckAllAccess.post(CheckAllAccess);
             return root;
         } else {
             setUI(MESSAGES);
         }
-
         return root;
     }
 
     private final Runnable CheckAllAccess = new Runnable() {
+        @SuppressLint("NewApi")
         @Override
         public void run() {
-            if (notificationsViewModel.getMapMessages().getValue() != null){
-                if (notificationsViewModel.getMapMessages().getValue().keySet().size() < 2){
-                    new NoteViewModel.asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    HandlerCheckAllAccess.postDelayed(this, 5000);
-                } else{
+            if (IfmMapMessagesNotNull()){
+                try{
                     HandlerCheckAllAccess.removeCallbacks(CheckAllAccess);
+                    setUI(MESSAGES);
+                } catch (NullPointerException e){
+                    HandlerCheckAllAccess.postDelayed(this, 1000);
                 }
-                setUI(notificationsViewModel.getMapMessages().getValue());
             } else {
-                HandlerCheckAllAccess.postDelayed(this, 5000);
+                HandlerCheckAllAccess.postDelayed(this, 2500);
             }
         }
     };

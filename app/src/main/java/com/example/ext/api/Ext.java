@@ -56,8 +56,6 @@ public class Ext {
 
     }
 
-    public boolean isAlpha(String name) {return name.matches("[a-zA-ZА-Яа-я]+");}
-
     private String RepeatStr(int i, String str) {
         String result = "";
         for( int u = 0; u < i; u++ ) {
@@ -113,8 +111,7 @@ public class Ext {
             String month = String.valueOf((Integer.parseInt(String.valueOf(data.get(1)))+1));
             if (day.length() == 1){ day = "0"+ day; }
             if (month.length() == 1){ month = "0"+ month; }
-            String Date = day + "." + month + "." + data.get(0);
-            return Date;
+            return day + "." + month + "." + data.get(0);
         } catch (JSONException e) {
             e.printStackTrace();
         }
