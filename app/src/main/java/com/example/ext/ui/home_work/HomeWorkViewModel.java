@@ -100,10 +100,12 @@ public class HomeWorkViewModel extends ViewModel {
                                 content.add(hm); // 2 home work
                                 content.add(mark); // 3 mark
                                 Objects.requireNonNull(whereIsLesson.get(Date)).add(content);
+
                             }
                         }
 
                     }
+
                     return whereIsLesson;
                 } catch (JSONException | NoSuchAlgorithmException e) {
                     e.printStackTrace(); }

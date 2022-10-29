@@ -79,8 +79,16 @@ public class NoteViewModel extends ViewModel {
                         if (type_of_mark.equals("null")){type_of_mark="Задание";}
                         theme = list_of_weights.getJSONArray(i).getString(4);
                         home_work =list_of_weights.getJSONArray(i).getString(8);
-                        id_of_all_notes.put(list_of_weights.getJSONArray(i).getInt(0), new ArrayList<>(Arrays.asList(type_of_mark, theme, home_work, weight.toString())));
+                        id_of_all_notes.put(list_of_weights.getJSONArray(i).getInt(0),
+                                new ArrayList<>(Arrays.asList(
+                                                            type_of_mark,
+                                                            theme,
+                                                            home_work,
+                                                            weight.toString())
+                                )
+                        );
                     }
+
                     JSONArray journalData = ext.GET_STUDENT_JOURNAL_DATA();
                     Map<String, ArrayList> notes = new TreeMap();
                     for (int k = 0; k < journalData.length(); k++) {
@@ -112,6 +120,7 @@ public class NoteViewModel extends ViewModel {
                             }
                         }
                     }
+                    Log.e("REQ", notes.toString());
                     return notes;
                 } catch (JSONException | NoSuchAlgorithmException e) {
                     e.printStackTrace();

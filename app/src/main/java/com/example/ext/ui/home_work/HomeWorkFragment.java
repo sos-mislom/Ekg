@@ -4,7 +4,7 @@ import static com.example.ext.ConfigApiResponses.HOME_WORK;
 import static com.example.ext.ui.home_work.HomeWorkViewModel.IfmMapHWNotNull;
 import static com.example.ext.ui.home_work.HomeWorkViewModel.begin_dt;
 import static com.example.ext.ui.home_work.HomeWorkViewModel.getStartHomeWorkAsync;
-import static com.example.ext.ui.note.NoteFragment.clearTableView;
+import static com.example.ext.ui.note.ListOfNotesFragment.clearTableView;
 
 import android.annotation.SuppressLint;
 import android.graphics.Typeface;
@@ -80,9 +80,10 @@ public class HomeWorkFragment extends Fragment {
     public void setUI(Map<String, ArrayList> result){
         int j;
 
-        TableLayout row_of_subj;
         TableRow row_of_date;
+        TableLayout row_of_subj;
         TextView nameOfSubjTV;
+
         TextView homeWorkContentTV;
         TableLayout row_of_day;
 
@@ -118,8 +119,6 @@ public class HomeWorkFragment extends Fragment {
 
             }
         });
-
-
 
         imageViewWeekPrev.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -169,6 +168,7 @@ public class HomeWorkFragment extends Fragment {
                 homeWorkContentTV.setVisibility(View.GONE);
                 homeWorkContentTV.setTextColor(ContextCompat.getColor(getContext(), R.color.blue_gray));
                 homeWorkContentTV.setText(array.get(i).get(2));
+                homeWorkContentTV.setTextIsSelectable(true);
                 homeWorkContentTV.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
                 homeWorkContentTV.setPadding(40, 5, 40, 10);
                 homeWorkContentTV.setLayoutParams(new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f));

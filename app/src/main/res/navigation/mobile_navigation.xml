@@ -35,7 +35,7 @@
 
     <fragment
         android:id="@+id/navigation_note"
-        android:name="com.example.ext.ui.note.NoteFragment"
+        android:name="com.example.ext.ui.note.ListOfNotesFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_note" />
 </navigation>

@@ -4,20 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.note.NoteFragment">
+    tools:context=".ui.note.ListOfNotesFragment">
 <ScrollView
     android:layout_height="match_parent"
     android:layout_width="match_parent">
     <TableLayout
         android:id="@+id/tbl_note_content"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+
         android:background="@color/very_light_blue_two"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <fragment
+            android:id="@+id/SubjFragment"
+            android:name="com.example.ext.ui.note.NoteFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"/>
     </TableLayout>
 </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

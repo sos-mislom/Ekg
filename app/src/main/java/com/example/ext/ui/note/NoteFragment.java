@@ -1,29 +1,23 @@
 package com.example.ext.ui.note;
 
-import static com.example.ext.ConfigApiResponses.MARKS;
-
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.ext.R;
-import com.example.ext.databinding.FragmentNoteBinding;
+import com.example.ext.ui.ObjectOfSubject;
 import com.example.ext.ui.dialogs.NoteInfoDialogFragment;
 import com.example.ext.ui.dialogs.SubjInfoDialogFragment;
 
@@ -31,105 +25,41 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
-
 public class NoteFragment extends Fragment {
-
-    private FragmentNoteBinding binding;
-    private Handler HandlerCheckAllAccess = new Handler();
-    private NoteViewModel notificationsViewModel;
-
-
-    public View onCreateView(@NonNull LayoutInflater inflater,
+    @Override
+    public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentNoteBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-        if (MARKS == null){
-            notificationsViewModel =
-                    new ViewModelProvider(this).get(NoteViewModel.class);
-            HandlerCheckAllAccess.post(CheckAllAccess);
-            return root;
-        } else {
-            setUI(MARKS);
-        }
-        return root;
-    }
+        View view = inflater.inflate(R.layout.fragment_notes_of_subj, container, false);
+        if(getArguments() != null) {
 
-    private final Runnable CheckAllAccess = new Runnable() {
-        @Override
-        public void run() {
-            if (notificationsViewModel.getNoteMap().getValue() != null){
-                if (notificationsViewModel.getNoteMap().getValue().keySet().size() < 2){
-                    new NoteViewModel.asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    HandlerCheckAllAccess.postDelayed(this, 5000);
-                } else{
-                    HandlerCheckAllAccess.removeCallbacks(CheckAllAccess);
-                }
-                setUI(notificationsViewModel.getNoteMap().getValue());
-            } else {
-                HandlerCheckAllAccess.postDelayed(this, 5000);
-            }
-        }
-    };
-    public static void clearTableView(ViewGroup tblview){
-        for (View i : getAllChildren(tblview)) {
-            ((ViewGroup) tblview).removeView(i);
-        }
-    }
-    public static ArrayList<View> getAllChildren(View v) {
-        if (!(v instanceof ViewGroup)) {
-            ArrayList<View> viewArrayList = new ArrayList<View>();
-            viewArrayList.add(v);
-            return viewArrayList;
-        }
-        ArrayList<View> result = new ArrayList<View>();
-        ViewGroup viewGroup = (ViewGroup) v;
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            View child = viewGroup.getChildAt(i);
-            ArrayList<View> viewArrayList = new ArrayList<View>();
-            viewArrayList.add(v);
-            viewArrayList.addAll(getAllChildren(child));
-            result.addAll(viewArrayList);
-        }
-        return result;
-    }
-    private void setUI(Map<String, ArrayList> data){
-        Typeface typefaceRoboto = Typeface.createFromAsset(getContext().getAssets(), "Roboto-Regular.ttf");
-        final TableLayout tbl_other_content = binding.tblNoteContent;
-
-        TableLayout.LayoutParams tlLayoutParams = new TableLayout.LayoutParams();
-        tlLayoutParams.setMargins(20,20,20,20);
-
-        for (String subj: data.keySet()) {
             int count = 0;
             double nominator = 0.0;
             double denominator = 0.0;
             double weight;
-            TableLayout tableLayout = new TableLayout(getContext());
-            tableLayout.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.less_rounded_corners));
-            tableLayout.setElevation(5);
 
-            TableRow row_of_subj_name = new TableRow(getContext());
+            ObjectOfSubject obj = getArguments().getParcelable("key");
+            Map<String, ArrayList> data = obj.paramToo;
+            String subj = obj.paramOne;
 
-            TableLayout tbl_of_subj_notes = new TableLayout(getContext());
-            TableRow row_of_notes = new TableRow(getContext());
-            TextView average_note = new TextView(getContext());
-            TextView subj_name = new TextView(getContext());
+            Typeface typefaceRoboto = Typeface.createFromAsset(getContext().getAssets(), "Roboto-Regular.ttf");
+            ConstraintLayout tableLayout = view.findViewById(R.id.subjectNotes);
+            TextView average_note = view.findViewById(R.id.SubjAverage);
+            TextView subj_name = view.findViewById(R.id.SubjName);
+            TableRow row_of_notes = view.findViewById(R.id.rowOfNotes);
 
             String subj_name_str;
-            if (subj.length() > 26) { subj_name_str = subj.substring(0, 23)+"...";}else  subj_name_str = subj;
+            if (subj.length() > 26) {
+                subj_name_str = subj.substring(0, 23) + "...";
+            } else subj_name_str = subj;
+
             subj_name.setText(subj_name_str);
             subj_name.setTypeface(typefaceRoboto);
-            subj_name.setTextColor(ContextCompat.getColor(getContext(), R.color.abc_search_url_text_pressed));
-            subj_name.setTextSize(22);
-            subj_name.setPadding(25,0,10,45);
 
-            row_of_subj_name.addView(subj_name);
-
-            row_of_subj_name.addView(average_note);
             ArrayList<ArrayList<String>> array = data.get(subj);
+
             int start = 0;
-            if (array.size() >= 8){
-                start = array.size()-7;
+            if (array.size() >= 8) {
+                start = array.size() - 7;
             }
 
             for (int j = 0; j < array.size(); j++) {
@@ -164,12 +94,12 @@ public class NoteFragment extends Fragment {
                         break;
                 }
 
-                LayerDrawable finalDrawable = new LayerDrawable(new Drawable[] {back_gradient});
-                if (!array.get(j).get(1).equals("null")){
+                LayerDrawable finalDrawable = new LayerDrawable(new Drawable[]{back_gradient});
+                if (!array.get(j).get(1).equals("null")) {
                     Drawable dotIcon = ContextCompat.getDrawable(getContext(), R.drawable.oval);
-                    finalDrawable = new LayerDrawable(new Drawable[] {back_gradient, dotIcon});
+                    finalDrawable = new LayerDrawable(new Drawable[]{back_gradient, dotIcon});
                     finalDrawable.setLayerInset(0, 0, 0, 0, 0);
-                    finalDrawable.setLayerInset(1,65,0,0,65);
+                    finalDrawable.setLayerInset(1, 65, 0, 0, 65);
                 }
                 mark_tv.setBackgroundDrawable(finalDrawable);
 
@@ -189,7 +119,7 @@ public class NoteFragment extends Fragment {
                         newFragment.show(getChildFragmentManager().beginTransaction(), "info");
                     }
                 });
-                if (j >= start){
+                if (j >= start) {
                     row_of_notes.addView(mark_tv, trRowParams);
                 }
 
@@ -204,22 +134,14 @@ public class NoteFragment extends Fragment {
 
             average_note.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.my_border_tv));
             average_note.setTextSize(20);
-            average_note.setGravity(Gravity.CENTER);
             average_note.setPadding(10, 10, 10, 10);
             average_note.setTextColor(ContextCompat.getColor(getContext(), R.color.camo_green));
 
 
             //row_of_notes.addView(average_note, 0);
-//            ImageView imageView = new ImageView(getContext());
-//            imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.more_res));
-//            row_of_notes.addView(imageView, 0);
-
-
-            tbl_of_subj_notes.addView(row_of_notes);
-
-
-            tableLayout.addView(row_of_subj_name, tlLayoutParams);
-            tableLayout.addView(tbl_of_subj_notes, tlLayoutParams);
+            //            ImageView imageView = new ImageView(getContext());
+            //            imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.more_res));
+            //            row_of_notes.addView(imageView, 0);
 
             tableLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -229,12 +151,8 @@ public class NoteFragment extends Fragment {
                 }
             });
 
-            tbl_other_content.addView(tableLayout, tlLayoutParams);
+
         }
-    }
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+        return view;
     }
 }
