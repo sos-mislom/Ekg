@@ -36,7 +36,7 @@ public class SubjInfoDialogFragment extends DialogFragment{
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         TableRow.LayoutParams trRowParams = new TableRow.LayoutParams();
-        trRowParams.setMargins(30, 10, 20, 30);
+        trRowParams.setMargins(40, 10, 10, 30);
 
         AlertDialog.Builder placeInfo = new AlertDialog.Builder(getActivity());
         placeInfo.setTitle(name);

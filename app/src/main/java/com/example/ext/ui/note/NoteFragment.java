@@ -1,5 +1,6 @@
 package com.example.ext.ui.note;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class NoteFragment extends Fragment {
+    @SuppressLint("SetTextI18n")
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -137,11 +139,6 @@ public class NoteFragment extends Fragment {
             average_note.setPadding(10, 10, 10, 10);
             average_note.setTextColor(ContextCompat.getColor(getContext(), R.color.camo_green));
 
-
-            //row_of_notes.addView(average_note, 0);
-            //            ImageView imageView = new ImageView(getContext());
-            //            imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.more_res));
-            //            row_of_notes.addView(imageView, 0);
 
             tableLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
