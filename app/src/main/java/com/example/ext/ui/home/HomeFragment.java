@@ -1,7 +1,5 @@
 package com.example.ext.ui.home;
 
-import static com.example.ext.ui.diary.DiaryViewModel.deserialize;
-
 import android.annotation.SuppressLint;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -29,18 +27,15 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.ext.MainActivity;
 import com.example.ext.R;
-import com.example.ext.api.JSON;
 import com.example.ext.databinding.FragmentHomeBinding;
 import com.example.ext.ui.dialogs.NoteInfoDialogFragment;
 
-import org.json.JSONException;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -199,11 +194,7 @@ public class HomeFragment extends Fragment {
         String dayOfTheWeek = sdf.format(d).substring(0, 1).toUpperCase() + sdf.format(d).substring(1);
         dairyData = MainActivity.data;
         if (dairyData != null && dairyData.length() > 0) {
-            try {
-                jsondairy = deserialize(JSON.decode(dairyData));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            jsondairy = new LinkedHashMap<>();
         } else{
             jsondairy.put("Понедельник", new ArrayList<>());
             jsondairy.put("Вторник", new ArrayList<>());
@@ -238,36 +229,7 @@ public class HomeFragment extends Fragment {
 
         TextView currentTV = binding.currentTV;
         TextView after = binding.afterTV;
-        for (String key : curr_day_map.keySet()) {
-            for (ArrayList arr : intervals){
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    if (!key.equals(dayOfTheWeek)){
-                        after.setText("Завтра " + curr_day_map.get(key).size() + getWordDeclension(curr_day_map.get(key).size()));
-                    } else {
-                        Date date_begin;
-                        try {
-                            date_begin = formatter.parse(arr.get(0).toString());
-                            Date date_end = formatter.parse(arr.get(1).toString());
-                            Date date_current = formatter.parse(currentTime);
-                            currentTV.setText("Уроки закончились");
-                            if ((date_current.after(date_begin) || date_current.equals(date_begin))
-                                    && (date_current.before(date_end)) || date_current.equals(date_end)) {
-                                if (intervals.indexOf(arr) < curr_day_map.get(key).size()){
-                                    currentTV.setText(curr_day_map.get(key).get(intervals.indexOf(arr)-1).toString() +" в " + intervals.get(curr_day_map.get(key).size()).get(1));
-                                }
-                            } else if (date_current.after(date_end)){
-                                if (curr_day_map.get(key).size() == 0){
-                                    currentTV.setText("Уроки закончились в " +  intervals.get(curr_day_map.get(key).size()).get(1));
-                                }else currentTV.setText("Уроки закончились в " +  intervals.get(curr_day_map.get(key).size()-1).get(1));
-                            }
-                        } catch (ParseException | IndexOutOfBoundsException e) {
-                            currentTV.setText("Уроки закончились");
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }
+
     }
 
     private void setUI(){

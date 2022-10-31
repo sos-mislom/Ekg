@@ -90,7 +90,7 @@ public class ListOfNotesFragment extends Fragment {
         for (String subj: data.keySet()) {
             Bundle bundle = new Bundle();
             ObjectOfSubject obj = new ObjectOfSubject(subj,  data);
-            bundle.putParcelable("key", obj);
+            bundle.putParcelable("subject_key", obj);
 
             NoteFragment youFragment = new NoteFragment();
             youFragment.setArguments(bundle);

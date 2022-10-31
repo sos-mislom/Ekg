@@ -3,23 +3,22 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="314dp"
+    android:layout_width="match_parent"
     android:layout_margin="10dp"
     android:layout_gravity="top|center"
     tools:ignore="MissingConstraints"
-    tools:layout_editor_absoluteX="48dp"
-    tools:layout_editor_absoluteY="16dp"
-    android:layout_height="?listPreferredItemHeight"
+    android:layout_height="wrap_content"
     android:clickable="true"
-    android:focusable="true"
-    android:foreground="?selectableItemBackground">
+    android:focusable="true">
 
-    <TextView
+    <EditText
         android:id="@+id/subject_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="85dp"
         android:text="ExampleText"
+        android:background="@android:color/transparent"
+        android:cursorVisible="false"
         android:textColor="@color/black"
         android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"

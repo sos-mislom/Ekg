@@ -39,7 +39,7 @@ public class NoteFragment extends Fragment {
             double denominator = 0.0;
             double weight;
 
-            ObjectOfSubject obj = getArguments().getParcelable("key");
+            ObjectOfSubject obj = getArguments().getParcelable("subject_key");
             Map<String, ArrayList> data = obj.paramToo;
             String subj = obj.paramOne;
 

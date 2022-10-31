@@ -4,26 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.diary.DiaryFragment">
+    tools:context=".ui.diary.ListOfDiaryFragment">
 
-    <TableLayout
-        android:id="@+id/tbl_other_content"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="10dp"
         android:background="@color/very_light_blue_two"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler"
+        app:layout_constraintTop_toTopOf="parent">
+        <TableLayout
+            android:id="@+id/tbl_of_day"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </androidx.recyclerview.widget.RecyclerView>
-    </TableLayout>
-
+            android:layout_height="wrap_content">
+            <fragment
+                android:id="@+id/SubjFragment"
+                android:name="com.example.ext.ui.diary.DiaryFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"/>
+        </TableLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

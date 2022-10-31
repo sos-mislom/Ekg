@@ -13,17 +13,18 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class DiaryViewModel extends ViewModel {
     private String dairyData;
-    private Map<String, ArrayList<String>> jsondairy = new HashMap<>();
-    private final MutableLiveData<Map<String, ArrayList<String>>> mMap;
+    private Map<String, ArrayList<String>> jsondairy = new LinkedHashMap<>();
+    private static MutableLiveData<Map<String, ArrayList<String>>> mMap;
 
     public DiaryViewModel() {
-        dairyData = DiaryFragment.data;
+        dairyData = ListOfDiaryFragment.data;
         mMap = new MutableLiveData<>();
-        //preferences.edit().remove("dairyData").commit();
+
         if (dairyData.length() > 0) {
             try {
                 jsondairy = deserialize(JSON.decode(dairyData));
@@ -57,7 +58,7 @@ public class DiaryViewModel extends ViewModel {
         }
         return map;
     }
-    public LiveData<Map<String, ArrayList<String>>> getDiaryMap() {
+    public static LiveData<Map<String, ArrayList<String>>> getDiaryMap() {
         return mMap;
     }
 }

@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/navigation_dairy"
-        android:name="com.example.ext.ui.diary.DiaryFragment"
+        android:name="com.example.ext.ui.diary.ListOfDiaryFragment"
         android:label="@string/title_diary"
         tools:layout="@layout/fragment_diary" />
 
