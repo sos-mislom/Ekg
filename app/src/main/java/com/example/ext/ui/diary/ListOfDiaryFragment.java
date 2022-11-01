@@ -44,8 +44,13 @@ public class ListOfDiaryFragment extends Fragment {
 
         binding = FragmentDiaryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        ArrayList<String> days = new ArrayList<>();
 
-        for (String key: jsonDiary.keySet()) {
+        days.add("Понедельник");days.add("Вторник");
+        days.add("Среда");days.add("Четверг");
+        days.add("Пятница");days.add("Суббота");
+        days.add("Воскресенье");
+        for (String key: days) {
             Bundle bundle = new Bundle();
             ObjectOfDiary obj = new ObjectOfDiary(key, jsonDiary.get(key));
             bundle.putParcelable("diary_key", obj);

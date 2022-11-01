@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
     android:background="@drawable/less_rounded_corners"
-    android:elevation="5dp"
+
     xmlns:android="http://schemas.android.com/apk/res/android">
     <TableLayout
         android:layout_width="match_parent"
@@ -17,6 +17,7 @@
             android:id="@+id/row_of_week"
             android:layout_width="match_parent"
             android:layout_height="25dp"
+            android:layout_marginBottom="10dp"
             android:background="@color/avatar_color_blue"
             tools:ignore="MissingConstraints">
 
@@ -45,6 +46,8 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
+            android:elevation="5dp"
+            android:background="@drawable/my_border_tv_blue"
             app:layout_constraintTop_toTopOf="@+id/row_of_week"
             android:layout_width="match_parent"
             android:layout_height="match_parent">

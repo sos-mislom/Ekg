@@ -1,5 +1,6 @@
 package com.example.ext.ui;
 
+import static com.example.ext.ConfigApiResponses.listOfIntervals;
 import static com.example.ext.ui.diary.DiaryViewModel.getDiaryMap;
 import static com.example.ext.ui.diary.ListOfDiaryFragment.serialize;
 
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,6 +52,11 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> implements
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         String subj = mData.get(position);
+        ArrayList<String> list = listOfIntervals.get(position);
+
+        String time = list.get(0) + "-" + list.get(1);
+
+        holder.myEdittext.setText(time);
         holder.myTextView.setText(subj);
         holder.myTextView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -106,10 +113,12 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> implements
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         EditText myTextView;
+        TextView myEdittext;
 
         ViewHolder(View itemView) {
             super(itemView);
             myTextView = itemView.findViewById(R.id.subject_name);
+            myEdittext = itemView.findViewById(R.id.time_of_subj);
             itemView.setOnClickListener(this);
         }
 
