@@ -264,17 +264,18 @@ public class HomeFragment extends Fragment {
             after.setText("Завтра уроков не намечается");
         }
 
-        for (ArrayList<String> arr : listOfIntervals) {
-            if (arr != null){
+        for (int i = 0; i < listOfIntervals.size(); i++) {
+            if (listOfIntervals.get(i) != null){
                 try {
-                    int index = listOfIntervals.indexOf(arr);
+                    ArrayList<String> arr = listOfIntervals.get(i);
 
                     Date date_begin = formatter.parse(arr.get(0));
                     Date date_end = formatter.parse(arr.get(1));
                     Date date_current = formatter.parse(currentTime);
+
                     if (date_current.after(date_begin) && date_current.before(date_end) ||
                             date_current.equals(date_begin) || date_current.equals(date_end)) {
-                        currentTV.setText(curr_day_map.get(dayOfTheWeek).get(index).toString() +
+                        currentTV.setText(curr_day_map.get(dayOfTheWeek).get(i).toString() +
                                 " в " +
                                 listOfIntervals.get(curr_day_map.get(dayOfTheWeek).size()).get(1));
                     } else if (date_current.after(date_end)){

@@ -60,7 +60,6 @@ public class NoteViewModel extends ViewModel {
 
                     JSONArray list_of_weights = ext.GET_STUDENT_LESSONS(dt.component1().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), dt.component2().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                     Pair<LocalDate, LocalDate> intervals = ext.GET_INTERVAL(true);
-                    Log.e("list_of_weights", list_of_weights.toString());
 
                     Map<Integer, ArrayList> id_of_all_notes = new TreeMap();
                     Double weight = 1.0;
@@ -120,7 +119,6 @@ public class NoteViewModel extends ViewModel {
                             }
                         }
                     }
-                    Log.e("REQ", notes.toString());
                     return notes;
                 } catch (JSONException | NoSuchAlgorithmException e) {
                     e.printStackTrace();
