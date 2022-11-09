@@ -67,13 +67,17 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
         HandlerCheckAllAccess.post(CheckAllAccess);
         isHomeWorkSet = true;
-        setUI();
+        try {
+            setUI();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return root;
 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void setUI(){
+    private void setUI() throws ParseException {
         if (binding != null) {
             HorizontalScrollView horizontalScrollView = binding.scrollViewHorizontalLastNotes;
             horizontalScrollView.setHorizontalScrollBarEnabled(false);
@@ -162,7 +166,13 @@ public class HomeFragment extends Fragment {
             TextView home_work_tv = binding.HomeWorkTV;
             TableLayout home_work = binding.tblHomeWork;
             if (next_day_map.keySet().size() > 0) {
-                home_work_tv.setText("На завтра задано " + next_day_map.keySet().size() + getWordDeclension(next_day_map.keySet().size()));
+                home_work_tv.setText(
+                        "На завтра " +
+                        getWordDeclension(next_day_map.keySet().size(), new String[]{"задан ", "задано "})
+                        + next_day_map.keySet().size()
+                        + getWordDeclension(next_day_map.keySet().size())
+                );
+
                 for (String key : next_day_map.keySet()) {
                     TableRow tableRow1 = new TableRow(getContext());
                     tableRow1.setGravity(Gravity.CENTER_VERTICAL);
@@ -212,7 +222,7 @@ public class HomeFragment extends Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint({"SetTextI18n", "SimpleDateFormat"})
-    private void setTableOfDiary(){
+    private void setTableOfDiary() throws ParseException {
         String dairyData;
         Map<String, ArrayList<String>> jsondairy = new LinkedHashMap<>();
 
@@ -226,8 +236,10 @@ public class HomeFragment extends Fragment {
         days.add("Пятница");days.add("Суббота");
         days.add("Воскресенье");
 
-        int now = LocalDate.now().getDayOfWeek().minus(1).getValue();
-        int tomorrow = LocalDate.now().getDayOfWeek().getValue();
+        int now = LocalDate.now().getDayOfWeek().getValue();
+        int tomorrow = LocalDate.now().getDayOfWeek().plus(1).getValue();
+        if (now > 0) now -= 1;
+        if (tomorrow > 0) tomorrow -= 1;
 
         Map<String, ArrayList> curr_day_map = new HashMap<>();
 
@@ -250,6 +262,7 @@ public class HomeFragment extends Fragment {
         }
 
         String dayOfTheWeek = days.get(now);
+
         String nextDayOfWeek = days.get(tomorrow);
         curr_day_map.put(dayOfTheWeek, jsondairy.get(dayOfTheWeek));
         curr_day_map.put(nextDayOfWeek, jsondairy.get(nextDayOfWeek));
@@ -263,6 +276,8 @@ public class HomeFragment extends Fragment {
         } else {
             after.setText("Завтра уроков не намечается");
         }
+        Date date_classes_begin = formatter.parse(listOfIntervals.get(curr_day_map.get(dayOfTheWeek).size()-1).get(0));
+        Date date_classes_end = formatter.parse(listOfIntervals.get(curr_day_map.get(dayOfTheWeek).size()-1).get(1));
 
         for (int i = 0; i < listOfIntervals.size(); i++) {
             if (listOfIntervals.get(i) != null){
@@ -273,19 +288,23 @@ public class HomeFragment extends Fragment {
                     Date date_end = formatter.parse(arr.get(1));
                     Date date_current = formatter.parse(currentTime);
 
-                    if (date_current.after(date_begin) && date_current.before(date_end) ||
-                            date_current.equals(date_begin) || date_current.equals(date_end)) {
-                        currentTV.setText(curr_day_map.get(dayOfTheWeek).get(i).toString() +
-                                " в " +
-                                listOfIntervals.get(curr_day_map.get(dayOfTheWeek).size()).get(1));
-                    } else if (date_current.after(date_end)){
-                        if (curr_day_map.get(dayOfTheWeek).size() == 0){
-                            currentTV.setText("Уроки закончились в " +
-                                    listOfIntervals.get(curr_day_map.get(dayOfTheWeek).size()).get(1));
-                        }else {
+                    if (date_current.after(date_classes_begin) && date_current.before(date_classes_end)) {
+                        if (date_current.after(date_begin) && date_current.before(date_end) ||
+                                date_current.equals(date_begin) || date_current.equals(date_end)){
+                            currentTV.setText(curr_day_map.get(dayOfTheWeek).get(i).toString() +
+                                    " в " +
+                                    listOfIntervals.get(i).get(1));
+                        } else {
+                            currentTV.setText(curr_day_map.get(dayOfTheWeek).get(i+1).toString() +
+                                    " в " +
+                                    listOfIntervals.get(i+1).get(1));
+                        }
+                    } else if (date_current.after(date_classes_end) && date_current.after(date_classes_begin)){
                             currentTV.setText("Уроки закончились в " +
                                     listOfIntervals.get(curr_day_map.get(dayOfTheWeek).size()-1).get(1));
-                        }
+                    } else if (date_current.before(date_classes_begin)){
+                        currentTV.setText("Уроки начнутся в " +
+                                listOfIntervals.get(curr_day_map.get(dayOfTheWeek).size()-1).get(0));
                     }
 
                 } catch (ParseException | IndexOutOfBoundsException e) {
@@ -296,7 +315,10 @@ public class HomeFragment extends Fragment {
 
     }
 
-
+    private String getWordDeclension(Integer n, String[] wordType){
+        if (n >= 2 ) return wordType[1];
+        else return wordType[0];
+    }
 
     private String getWordDeclension(Integer n){
         String[] wordType = new String[]{" урок", " урока", " уроков"};

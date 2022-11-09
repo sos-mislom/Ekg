@@ -92,8 +92,7 @@ public class HomeWorkFragment extends Fragment {
 
         TableLayout.LayoutParams tlLayoutParams = new TableLayout.LayoutParams();
         tlLayoutParams.setMargins(25,10,20,30);
-        tblayoutl.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.less_rounded_corners));
-
+        
         List<String> keys = new ArrayList<>(result.keySet());
         List<LocalDate> keys_format_date = new ArrayList<>();
         for (int i = 0; i < keys.size(); i++) {
