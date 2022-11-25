@@ -46,9 +46,11 @@ public class SubjInfoDialogFragment extends DialogFragment{
         TableLayout tableLayout = view.findViewById(R.id.contentDialogFragment);
 
         ArrayList<List<ArrayList<String>>> other_list = new ArrayList<>();
-        for (int j = 0; j < array.size()/6 ; j++){
-            other_list.add(array.subList(j, j+6));
+
+        for (int j = 0; j < array.size()/6;j++){
+            other_list.add(array.subList(j*6, (j+1)*6));
         }
+
         int ost = array.size() % 6;
         other_list.add(array.subList(array.size()-ost, array.size()));
 
