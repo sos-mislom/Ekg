@@ -28,6 +28,11 @@ public class MainActivity extends AppCompatActivity {
     public static String data;
     public static String username;
     public static String password;
+    public static ArrayList<Integer> TimeList;
+    public static String lessons_start;
+    public static String long_break;
+    public static String curt_break;
+
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -38,11 +43,26 @@ public class MainActivity extends AppCompatActivity {
         username = preferences.getString("username", "");
         data = preferences.getString("dairyData", "");
 
+        lessons_start = preferences.getString("lessons_start", "");
+        long_break = preferences.getString("long_break", "");
+        curt_break = preferences.getString("curt_break", "");
+
+        if (lessons_start.length() == 0){
+            lessons_start = "8:10"; }
+        if (long_break.length() == 0){
+            long_break = "20"; }
+        if (curt_break.length() == 0){
+            curt_break = "10"; }
+
+        TimeList = new ArrayList<Integer>();
+        for (String x : lessons_start.split(":")){
+            TimeList.add(Integer.parseInt(x));
+        }
         createListOfIntervals(
-                new ArrayList<Integer>(Arrays.asList(8, 10)),
+                new ArrayList<Integer>(TimeList),
                 new ArrayList<Integer>(Collections.singletonList(0)),
-                20,
-                10);
+                Integer.parseInt(long_break),
+                Integer.parseInt(curt_break));
 
         super.onCreate(savedInstanceState);
         com.example.ext.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());

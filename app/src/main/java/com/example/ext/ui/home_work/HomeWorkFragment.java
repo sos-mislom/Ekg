@@ -15,6 +15,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -45,6 +46,7 @@ public class HomeWorkFragment extends Fragment {
     private FragmentHomeWorkBinding binding;
     ImageView imageViewWeekNext;
     ImageView imageViewWeekPrev;
+    Button imageButton;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -52,6 +54,7 @@ public class HomeWorkFragment extends Fragment {
         View root = binding.getRoot();
         imageViewWeekNext = binding.getRoot().findViewById(R.id.imageButton2);
         imageViewWeekPrev = binding.getRoot().findViewById(R.id.imageButton3);
+        imageButton = binding.getRoot().findViewById(R.id.imageButton);
         if (HOME_WORK == null){
             HandlerCheckAllAccess.post(CheckAllAccess);
             return root;
@@ -108,6 +111,14 @@ public class HomeWorkFragment extends Fragment {
             }
         }
 
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onClick(View view) {
+                getStartHomeWorkAsync();
+                HandlerCheckAllAccess.post(CheckAllAccess);
+            }
+        });
 
         imageViewWeekNext.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)

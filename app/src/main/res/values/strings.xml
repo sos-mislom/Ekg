@@ -17,4 +17,9 @@
     <string name="date">Дата</string>
     <string name="now">сегодня</string>
     <string name="afewtimeago">Недавно</string>
+    <string name="current_diary">Текушая неделя</string>
+    <string name="settings">Настройки</string>
+    <string name="no_hm">Отдыхайте, домашки нет</string>
+    <string name="next_dk">Следующий непойми когда</string>
+    <string name="l_nf">Уроков не найдено</string>
 </resources>

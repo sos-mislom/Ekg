@@ -4,4 +4,8 @@
         <item name="colorPrimary">#001D79B1</item>
         <item name="colorPrimaryDark">#00084D95</item>
     </style>
+    <style name="TimePicker">
+        <item name="android:timePickerMode">spinner</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
 </resources>

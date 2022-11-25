@@ -96,7 +96,7 @@
                     <TextView
                         android:id="@+id/currentTV"
                         android:textSize="26sp"
-                        android:text="Уроков не найдено"
+                        android:text="@string/l_nf"
                         android:textColor="@color/abc_search_url_text_pressed"
                         android:layout_marginStart="10sp"
                         >
@@ -105,7 +105,7 @@
                         android:id="@+id/afterTV"
                         android:textColor="@color/secondary_text"
                         android:textSize="16sp"
-                        android:text="Следующий непойми когда"
+                        android:text="@string/next_dk"
                         android:layout_marginStart="10sp"
                         android:layout_marginTop="5sp"
                         android:layout_marginBottom="10sp"
@@ -114,7 +114,7 @@
                 </TableLayout>
                 <TextView
                     android:id="@+id/HomeWorkTV"
-                    android:text="Отдыхайте, домашки нет"
+                    android:text="@string/no_hm"
                     android:textColor="@color/abc_search_url_text_pressed"
                     android:textSize="24sp"
                     android:layout_marginStart="10sp"
@@ -129,7 +129,18 @@
                     android:layout_marginTop="10sp"
                     android:layout_marginBottom="10sp"
                     android:background="@drawable/less_rounded_corners">
+
                 </TableLayout>
+                <Button
+                    android:id="@+id/settingsButton"
+                    android:text="@string/settings"
+                    android:background="@drawable/less_rounded_corners"
+                    android:textColor="@color/abc_search_url_text_pressed"
+                    android:textSize="24sp"
+                    android:layout_marginStart="10sp"
+                    android:layout_marginEnd="10sp"
+                    android:layout_marginBottom="5dp">
+                </Button>
             </TableLayout>
 
         </ScrollView>

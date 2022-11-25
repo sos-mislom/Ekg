@@ -35,6 +35,7 @@ import com.example.ext.R;
 import com.example.ext.api.JSON;
 import com.example.ext.databinding.FragmentHomeBinding;
 import com.example.ext.ui.dialogs.NoteInfoDialogFragment;
+import com.example.ext.ui.dialogs.SettingsDialogFragment;
 
 import org.json.JSONException;
 
@@ -84,6 +85,16 @@ public class HomeFragment extends Fragment {
             ScrollView scrollView = binding.scrollViewHome;
             scrollView.setVerticalScrollBarEnabled(false);
             setTableOfDiary();
+
+
+            binding.settingsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SettingsDialogFragment newFragment = new SettingsDialogFragment();
+                    newFragment.show(getChildFragmentManager(), "settings");
+                }
+            });
+
         }
     }
 
@@ -281,38 +292,39 @@ public class HomeFragment extends Fragment {
 
         for (int i = 0; i < listOfIntervals.size(); i++) {
             if (listOfIntervals.get(i) != null){
-                try {
-                    ArrayList<String> arr = listOfIntervals.get(i);
+                ArrayList<String> arr = listOfIntervals.get(i);
 
-                    Date date_begin = formatter.parse(arr.get(0));
-                    Date date_end = formatter.parse(arr.get(1));
+                Date date_begin = formatter.parse(arr.get(0));
+                Date date_end = formatter.parse(arr.get(1));
+                Date date_current = formatter.parse(currentTime);
 
-                    Date date_begin_next = formatter.parse(listOfIntervals.get(i+1).get(0));
-
-                    Date date_current = formatter.parse(currentTime);
-
-                    if (date_current.after(date_classes_begin) && date_current.before(date_classes_end)) {
-                        if (date_current.after(date_begin) && date_current.before(date_end)){
-                            currentTV.setText(curr_day_map.get(dayOfTheWeek).get(i) +
-                                    " в " +
-                                    listOfIntervals.get(i).get(1));
-                        } else if (date_current.after(date_end) && date_current.after(date_begin_next)){
-                            currentTV.setText("(П)" +
-                                    curr_day_map.get(dayOfTheWeek).get(i+1) +
-                                    " в " +
-                                    listOfIntervals.get(i+1).get(0));
-                        }
-                    } else if (date_current.after(date_classes_end) && date_current.after(date_classes_begin)){
-                            currentTV.setText("Уроки закончились в " +
-                                    listOfIntervals.get(curr_day_map.get(dayOfTheWeek).size()-1).get(1));
-                    } else if (date_current.before(date_classes_begin)){
-                        currentTV.setText("Уроки начнутся в " +
-                                listOfIntervals.get(0).get(0));
-                    }
-
-                } catch (ParseException | IndexOutOfBoundsException e) {
-                    e.printStackTrace();
+                Date date_begin_next = formatter.parse(listOfIntervals.get(i).get(0));
+                if (i < listOfIntervals.size()-1){
+                    date_begin_next = formatter.parse(listOfIntervals.get(i+1).get(0));
                 }
+
+                if (date_current.after(date_classes_begin) && date_current.before(date_classes_end)) {
+                    if (date_current.after(date_begin) && date_current.before(date_end)){
+                        currentTV.setText(curr_day_map.get(dayOfTheWeek).get(i) +
+                                " с " +
+                                listOfIntervals.get(i).get(0) +
+                                " до " +
+                                listOfIntervals.get(i).get(1));
+                    } else if (date_current.after(date_end) && date_current.after(date_begin_next)){
+                        currentTV.setText("(П)" +
+                                curr_day_map.get(dayOfTheWeek).get(i+1) +
+                                " в " +
+                                listOfIntervals.get(i+1).get(0));
+                    }
+                } else if (date_current.after(date_classes_end) && date_current.after(date_classes_begin)){
+                        currentTV.setText("Уроки закончились в " +
+                                listOfIntervals.get(curr_day_map.get(dayOfTheWeek).size()-1).get(1));
+                } else if (date_current.before(date_classes_begin)){
+                    currentTV.setText("Уроки начнутся в " +
+                            listOfIntervals.get(0).get(0));
+                }
+
+
             }
         }
 

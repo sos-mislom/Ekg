@@ -31,7 +31,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class HomeWorkViewModel extends ViewModel {
     public static LocalDate begin_dt;
-    private static LocalDate end_dt;
     private static MutableLiveData<Map<String, ArrayList>> mMapHW = new MutableLiveData<>();
     public static AsyncTask<Void, Void, Map<String, ArrayList>> thread;
 
@@ -51,6 +50,7 @@ public class HomeWorkViewModel extends ViewModel {
         thread = new asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public static void getStartHomeWorkAsync(LocalDate bd){
         begin_dt = bd;
         thread = new asyncEXT().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -60,7 +60,7 @@ public class HomeWorkViewModel extends ViewModel {
         @RequiresApi(api = Build.VERSION_CODES.N)
         private Map<String, ArrayList> GetContentForActivityMain() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                end_dt = begin_dt.plusDays(5);
+                LocalDate end_dt = begin_dt.plusDays(5);
                 try {
                     //Ext ext = new Ext("Зайцева","<Cb0@4F9Sx");
                     //Ext ext = new Ext("Зайцев","3MA8|ZJQ{0");
