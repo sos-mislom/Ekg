@@ -97,8 +97,6 @@ public class HomeViewModel extends ViewModel {
             HandlerCheckAllAccess.post(checkAllAccess);
         }
     }
-
-
     public LiveData<Map<String, ArrayList<String>>> getMapOfNotes() {
         return mMapN;
     }

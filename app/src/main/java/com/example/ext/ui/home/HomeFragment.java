@@ -30,12 +30,13 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.ext.MainActivity;
 import com.example.ext.R;
 import com.example.ext.api.JSON;
 import com.example.ext.databinding.FragmentHomeBinding;
+import com.example.ext.helper.PreferencesUtil;
 import com.example.ext.ui.dialogs.NoteInfoDialogFragment;
 import com.example.ext.ui.dialogs.SettingsDialogFragment;
+import com.example.ext.ui.dialogs.UpdateDialogFragment;
 
 import org.json.JSONException;
 
@@ -69,10 +70,12 @@ public class HomeFragment extends Fragment {
         HandlerCheckAllAccess.post(CheckAllAccess);
         isHomeWorkSet = true;
         try {
+
             setUI();
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
         return root;
 
     }
@@ -80,12 +83,12 @@ public class HomeFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setUI() throws ParseException {
         if (binding != null) {
+
             HorizontalScrollView horizontalScrollView = binding.scrollViewHorizontalLastNotes;
             horizontalScrollView.setHorizontalScrollBarEnabled(false);
             ScrollView scrollView = binding.scrollViewHome;
             scrollView.setVerticalScrollBarEnabled(false);
             setTableOfDiary();
-
 
             binding.settingsButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -108,8 +111,16 @@ public class HomeFragment extends Fragment {
             if (homeViewModel.getMapOfNotes().getValue() != null && binding != null){
                 setTableOfNotes();
             } else{ HandlerCheckAllAccess.postDelayed(this, 1000); }
+
             if (homeViewModel.getMapOfNotes().getValue() != null && homeViewModel.getMapOfHW().getValue() != null){
                 HandlerCheckAllAccess.removeCallbacks(CheckAllAccess);
+            }
+            if (PreferencesUtil.aboutNewVersion != null){
+                if (Boolean.parseBoolean(PreferencesUtil.aboutNewVersion.get(0))){
+                    PreferencesUtil.aboutNewVersion.set(0, "False");
+                    UpdateDialogFragment newFragment = new UpdateDialogFragment();
+                    newFragment.show(getChildFragmentManager().beginTransaction(), "update");
+                }
             }
         }
     };
@@ -132,19 +143,24 @@ public class HomeFragment extends Fragment {
             Drawable back_gradient;
             switch (last_notes_map.get(key).get(2)) {
                 case ("4"):
-                    back_gradient = ContextCompat.getDrawable(getContext(), R.drawable.average_mark_background_gradient_ok);
+                    back_gradient = ContextCompat.getDrawable(getContext(),
+                            R.drawable.average_mark_background_gradient_ok);
                     break;
                 case ("3"):
-                    back_gradient = ContextCompat.getDrawable(getContext(), R.drawable.average_mark_background_gradient_normal);
+                    back_gradient = ContextCompat.getDrawable(getContext(),
+                            R.drawable.average_mark_background_gradient_normal);
                     break;
                 case ("5"):
-                    back_gradient = ContextCompat.getDrawable(getContext(), R.drawable.average_mark_background_gradient_good);
+                    back_gradient = ContextCompat.getDrawable(getContext(),
+                            R.drawable.average_mark_background_gradient_good);
                     break;
                 case ("2"):
-                    back_gradient = ContextCompat.getDrawable(getContext(), R.drawable.average_mark_background_gradient_bad);
+                    back_gradient = ContextCompat.getDrawable(getContext(),
+                            R.drawable.average_mark_background_gradient_bad);
                     break;
                 default:
-                    back_gradient = ContextCompat.getDrawable(getContext(), R.drawable.average_mark_background_gradient_default);
+                    back_gradient = ContextCompat.getDrawable(getContext(),
+                            R.drawable.average_mark_background_gradient_default);
                     break;
             }
 
@@ -172,6 +188,7 @@ public class HomeFragment extends Fragment {
 
     @SuppressLint("ResourceAsColor")
     private void setTableOfHomeWork(){
+
         if (isHomeWorkSet){
             Map<String, ArrayList<String>> next_day_map = homeViewModel.getMapOfHW().getValue();
             TextView home_work_tv = binding.HomeWorkTV;
@@ -234,6 +251,7 @@ public class HomeFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint({"SetTextI18n", "SimpleDateFormat"})
     private void setTableOfDiary() throws ParseException {
+
         String dairyData;
         Map<String, ArrayList<String>> jsondairy = new LinkedHashMap<>();
 
@@ -254,7 +272,7 @@ public class HomeFragment extends Fragment {
 
         Map<String, ArrayList> curr_day_map = new HashMap<>();
 
-        dairyData = MainActivity.data;
+        dairyData = PreferencesUtil.data;
 
         if (dairyData.length() > 0) {
             try {
@@ -287,12 +305,14 @@ public class HomeFragment extends Fragment {
         } else {
             after.setText("Завтра уроков не намечается");
         }
-        Date date_classes_begin = formatter.parse(listOfIntervals.get(0).get(0));
-        Date date_classes_end = formatter.parse(listOfIntervals.get(curr_day_map.get(dayOfTheWeek).size()-1).get(1));
+
 
         for (int i = 0; i < listOfIntervals.size(); i++) {
-            if (listOfIntervals.get(i) != null){
+            if (listOfIntervals.get(i) != null || listOfIntervals.size() != 0){
                 ArrayList<String> arr = listOfIntervals.get(i);
+
+                Date date_classes_begin = formatter.parse(listOfIntervals.get(0).get(0));
+                Date date_classes_end = formatter.parse(listOfIntervals.get(listOfIntervals.size()-1).get(1));
 
                 Date date_begin = formatter.parse(arr.get(0));
                 Date date_end = formatter.parse(arr.get(1));
@@ -318,13 +338,13 @@ public class HomeFragment extends Fragment {
                     }
                 } else if (date_current.after(date_classes_end) && date_current.after(date_classes_begin)){
                         currentTV.setText("Уроки закончились в " +
-                                listOfIntervals.get(curr_day_map.get(dayOfTheWeek).size()-1).get(1));
+                                listOfIntervals.get(listOfIntervals.size()-1).get(1));
                 } else if (date_current.before(date_classes_begin)){
                     currentTV.setText("Уроки начнутся в " +
                             listOfIntervals.get(0).get(0));
                 }
-
-
+            } else {
+                currentTV.setText("Уроков не наййдено");
             }
         }
 

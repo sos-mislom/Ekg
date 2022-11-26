@@ -1,8 +1,9 @@
 package com.example.ext.ui.dialogs;
 
-import static com.example.ext.MainActivity.TimeList;
-import static com.example.ext.MainActivity.curt_break;
-import static com.example.ext.MainActivity.long_break;
+
+import static com.example.ext.helper.PreferencesUtil.TimeList;
+import static com.example.ext.helper.PreferencesUtil.curt_break;
+import static com.example.ext.helper.PreferencesUtil.long_break;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;

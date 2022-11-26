@@ -13,8 +13,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.ext.MainActivity;
 import com.example.ext.api.Ext;
+import com.example.ext.helper.PreferencesUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,7 +55,7 @@ public class NoteViewModel extends ViewModel {
         private Map<String, ArrayList> GetContentForNotes() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 try {
-                    Ext ext = new Ext(MainActivity.username, MainActivity.password);
+                    Ext ext = new Ext(PreferencesUtil.username, PreferencesUtil.password);
                     Pair<LocalDate, LocalDate> dt = ext.GET_INTERVAL(false);
 
                     JSONArray list_of_weights = ext.GET_STUDENT_LESSONS(dt.component1().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), dt.component2().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));

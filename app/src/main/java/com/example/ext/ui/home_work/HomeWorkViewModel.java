@@ -13,8 +13,8 @@ import androidx.annotation.RequiresApi;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.ext.MainActivity;
 import com.example.ext.api.Ext;
+import com.example.ext.helper.PreferencesUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,7 +65,7 @@ public class HomeWorkViewModel extends ViewModel {
                     //Ext ext = new Ext("Зайцева","<Cb0@4F9Sx");
                     //Ext ext = new Ext("Зайцев","3MA8|ZJQ{0");
                     //Ext ext = new Ext("Кудряшов","Ob7]NDz79+");
-                    Ext ext = new Ext(MainActivity.username, MainActivity.password);
+                    Ext ext = new Ext(PreferencesUtil.username, PreferencesUtil.password);
                     JSONArray studentGroups = ext.GET_STUDENT_GROUPS();
                     JSONArray dairyData = ext.GET_STUDENT_DAIRY(begin_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), end_dt.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                     Map<String, ArrayList> whereIsLesson = new HashMap<>();

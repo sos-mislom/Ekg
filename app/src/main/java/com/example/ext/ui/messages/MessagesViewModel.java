@@ -7,22 +7,15 @@ import static com.example.ext.ConfigApiResponses.TEACHERS;
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.ext.MainActivity;
 import com.example.ext.api.Ext;
-import com.example.ext.databinding.FragmentMessagesBinding;
+import com.example.ext.helper.PreferencesUtil;
 import com.example.ext.ui.note.NoteViewModel;
 
 import org.json.JSONArray;
@@ -52,7 +45,7 @@ public class MessagesViewModel extends ViewModel {
         private Map<String, ArrayList> GetContentForMessages() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 try {
-                    Ext ext = new Ext(MainActivity.username, MainActivity.password);
+                    Ext ext = new Ext(PreferencesUtil.username, PreferencesUtil.password);
 
                     JSONArray messageData = ext.GET_MESSAGES();
                     Map<String, ArrayList> messages = new TreeMap();
