@@ -52,9 +52,11 @@ public class HomeWorkFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeWorkBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        imageViewWeekNext = binding.getRoot().findViewById(R.id.imageButton2);
-        imageViewWeekPrev = binding.getRoot().findViewById(R.id.imageButton3);
-        imageButton = binding.getRoot().findViewById(R.id.imageButton);
+
+        imageViewWeekNext = root.findViewById(R.id.imageButton2);
+        imageViewWeekPrev = root.findViewById(R.id.imageButton3);
+        imageButton = root.findViewById(R.id.imageButton);
+
         if (HOME_WORK == null){
             HandlerCheckAllAccess.post(CheckAllAccess);
             return root;
@@ -82,7 +84,6 @@ public class HomeWorkFragment extends Fragment {
 
     public void setUI(Map<String, ArrayList> result){
         int j;
-
         TableRow row_of_date;
         TableLayout row_of_subj;
         TextView nameOfSubjTV;

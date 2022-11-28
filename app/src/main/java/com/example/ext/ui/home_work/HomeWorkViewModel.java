@@ -134,8 +134,7 @@ public class HomeWorkViewModel extends ViewModel {
                 getStartHomeWorkAsync(begin_dt);
             } else{
                 mMapHW.setValue(result);
-                Map<String, ArrayList> targetMap = new ConcurrentHashMap<>(result);
-                HOME_WORK = targetMap;
+                HOME_WORK = new ConcurrentHashMap<>(result);
             }
         }
     }

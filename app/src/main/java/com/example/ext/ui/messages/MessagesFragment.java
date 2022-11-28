@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class MessagesFragment extends Fragment {
     private FragmentMessagesBinding binding;
-    private final Handler HandlerCheckAllAccess = new Handler();
+    private Handler HandlerCheckAllAccess = new Handler();
 
 
     @SuppressLint("NewApi")
@@ -37,6 +37,8 @@ public class MessagesFragment extends Fragment {
         binding = FragmentMessagesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         if (MESSAGES == null){
+            MessagesViewModel mvm = new MessagesViewModel();
+            mvm.getStartMessageAsync();
             HandlerCheckAllAccess.post(CheckAllAccess);
             return root;
         } else {
@@ -46,54 +48,55 @@ public class MessagesFragment extends Fragment {
     }
 
     private final Runnable CheckAllAccess = new Runnable() {
-        @SuppressLint("NewApi")
         @Override
         public void run() {
             if (IfmMapMessagesNotNull()){
                 try{
+
                     HandlerCheckAllAccess.removeCallbacks(CheckAllAccess);
                     setUI(MESSAGES);
                 } catch (NullPointerException e){
                     HandlerCheckAllAccess.postDelayed(this, 1000);
                 }
             } else {
-                HandlerCheckAllAccess.postDelayed(this, 2500);
+                HandlerCheckAllAccess.postDelayed(this, 1500);
             }
         }
     };
 
     public void setUI(Map<String, ArrayList> result){
         TableLayout tbl_other_content;
-        if (binding != null ){
-            tbl_other_content = binding.tblMessagesContent;
-            TableLayout.LayoutParams trRowParams = new TableLayout.LayoutParams();
-            trRowParams.setMargins(20, 20, 20, 30);
-            for (String teacher: result.keySet()) {
-                TableRow row_of_msg_teacher = new TableRow(getContext());
-                TableLayout tbl_of_msg = new TableLayout(getContext());
-                tbl_of_msg.setPadding(20,20,20,20);
-                tbl_of_msg.setElevation(5);
-                tbl_of_msg.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.less_rounded_corners_transp));
-                //50
-                ArrayList<ArrayList<String>> array = result.get(teacher);
-                TextView tt = new TextView(getContext());
-                tt.setText(teacher);
-                tt.setTextSize(21);
-                tt.setTextColor(ContextCompat.getColor(getContext(), R.color.background_material_dark));
-                tt.setPadding(20, 0, 0, 0);
-                row_of_msg_teacher.addView(tt);
-                tbl_other_content.addView(row_of_msg_teacher);
 
-                for (int j = 0; j < array.size(); j++) {
-                    TableRow row_of_msg = new TableRow(getContext());
-                    row_of_msg.setPadding(10,20,10,20);
-                    row_of_msg.setElevation(5);
-                    row_of_msg.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.less_rounded_corners));
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        row_of_msg.setAutofillHints(array.get(j).get(1) + " " + array.get(j).get(0));
-                    }
+        tbl_other_content = binding.tblMessagesContent;
 
-                    String message = array.get(j).get(1);
+        TableLayout.LayoutParams trRowParams = new TableLayout.LayoutParams();
+        trRowParams.setMargins(20, 20, 20, 30);
+        for (String teacher: result.keySet()) {
+            TableRow row_of_msg_teacher = new TableRow(getContext());
+            TableLayout tbl_of_msg = new TableLayout(getContext());
+            tbl_of_msg.setPadding(20,20,20,20);
+            tbl_of_msg.setElevation(5);
+            tbl_of_msg.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.less_rounded_corners_transp));
+            //50
+            ArrayList<ArrayList<String>> array = result.get(teacher);
+            TextView tt = new TextView(getContext());
+            tt.setText(teacher);
+            tt.setTextSize(21);
+            tt.setTextColor(ContextCompat.getColor(getContext(), R.color.background_material_dark));
+            tt.setPadding(20, 0, 0, 0);
+            row_of_msg_teacher.addView(tt);
+            tbl_other_content.addView(row_of_msg_teacher);
+
+            for (int j = 0; j < array.size(); j++) {
+                TableRow row_of_msg = new TableRow(getContext());
+                row_of_msg.setPadding(10,20,10,20);
+                row_of_msg.setElevation(5);
+                row_of_msg.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.less_rounded_corners));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    row_of_msg.setAutofillHints(array.get(j).get(1) + " " + array.get(j).get(0));
+                }
+
+                String message = array.get(j).get(1);
 //                    String str ="";
 //                    if(message.length() >= 45) {
 //                        int total = message.length() / 45;
@@ -110,29 +113,29 @@ public class MessagesFragment extends Fragment {
 //                    } else {
 //                        str = str+ message;
 //                    }
-                    TextView msg = new TextView(getContext());
-                    msg.setText(message);
-                    msg.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
-                    msg.setPadding(40, 5, 40, 10);
-                    msg.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
-                            TableRow.LayoutParams.WRAP_CONTENT, 1f));
-                    msg.setPadding(15, 10, 15, 10);
-                    msg.setTextSize(17);
+                TextView msg = new TextView(getContext());
+                msg.setText(message);
+                msg.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+                msg.setPadding(40, 5, 40, 10);
+                msg.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
+                        TableRow.LayoutParams.WRAP_CONTENT, 1f));
+                msg.setPadding(15, 10, 15, 10);
+                msg.setTextSize(17);
 
-                    TextView date = new TextView(getContext());
-                    date.setText(array.get(j).get(0));
-                    date.setPadding(25, 10, 20, 0);
-                    date.setTextSize(20);
-                    date.setTextColor(ContextCompat.getColor(getContext(), R.color.white_two));
-                    tbl_of_msg.addView(date);
+                TextView date = new TextView(getContext());
+                date.setText(array.get(j).get(0));
+                date.setPadding(25, 10, 20, 0);
+                date.setTextSize(20);
+                date.setTextColor(ContextCompat.getColor(getContext(), R.color.white_two));
+                tbl_of_msg.addView(date);
 
-                    row_of_msg.addView(msg);
-                    tbl_of_msg.addView(row_of_msg, trRowParams);
-                }
-                tbl_other_content.addView(tbl_of_msg, trRowParams);
+                row_of_msg.addView(msg);
+                tbl_of_msg.addView(row_of_msg, trRowParams);
+            }
+            tbl_other_content.addView(tbl_of_msg, trRowParams);
             }
         }
-    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

@@ -150,8 +150,7 @@ public class NoteViewModel extends ViewModel {
                 getStartNoteAsync();
             } else {
                // mMapN.setValue(result);
-                Map<String, ArrayList> targetMap = new ConcurrentHashMap<>(result);
-                MARKS = targetMap;
+                MARKS = new ConcurrentHashMap<>(result);
             }
         }
     }

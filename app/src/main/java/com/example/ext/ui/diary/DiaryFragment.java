@@ -62,7 +62,7 @@ public class DiaryFragment extends Fragment implements Adapter.ItemClickListener
     public void onItemClick(View view, int position) {
         Toast.makeText(
                 getContext(),
-                "Ткнули на " + adapter.getItem(position) + " в строке " + position,
+                "Нажмите на \"ОКНО\" Отработка нажатий - вещь капризная)",
                 Toast.LENGTH_SHORT
         ).show();
 

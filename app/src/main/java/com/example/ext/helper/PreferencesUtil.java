@@ -174,10 +174,14 @@ public class PreferencesUtil {
                     next_day_map.add(patchNote);
                     next_day_map.add(urlNewApk);
                     next_day_map.add(newVersion);
+
                     return next_day_map;
                 } else {
                     ArrayList<String> next_day_map = new ArrayList<>();
                     next_day_map.add("False");
+                    next_day_map.add("null");
+                    next_day_map.add("null");
+                    next_day_map.add("null");
                     return next_day_map;
                 }
             } catch (JSONException e) {
@@ -185,6 +189,9 @@ public class PreferencesUtil {
             }
             ArrayList<String> next_day_map = new ArrayList<>();
             next_day_map.add("False");
+            next_day_map.add("null");
+            next_day_map.add("null");
+            next_day_map.add("null");
             return next_day_map;
         }
 

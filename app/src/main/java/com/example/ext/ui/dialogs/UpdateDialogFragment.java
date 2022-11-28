@@ -1,9 +1,12 @@
 package com.example.ext.ui.dialogs;
 
+import static androidx.core.content.FileProvider.getUriForFile;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -17,6 +20,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
 
+import com.example.ext.BuildConfig;
 import com.example.ext.MainActivity;
 import com.example.ext.R;
 import com.example.ext.helper.PreferencesUtil;
@@ -31,6 +35,10 @@ import java.net.URLConnection;
 
 public class UpdateDialogFragment extends DialogFragment {
     private ProgressDialog pDialog;
+    private Context activityContext;
+    public UpdateDialogFragment(Context ActivityContext){
+        activityContext = ActivityContext;
+    }
 
     @SuppressLint({"ResourceType", "SetTextI18n"})
     @Override
@@ -77,7 +85,7 @@ public class UpdateDialogFragment extends DialogFragment {
         pDialog.setCancelable(true);
     }
 
-    @SuppressLint("StaticFieldLeak")
+
     class DownloadFileFromURL extends AsyncTask<String, String, String> {
         @Override
         protected void onPreExecute() {
@@ -89,6 +97,7 @@ public class UpdateDialogFragment extends DialogFragment {
         protected String doInBackground(String... f_url) {
             int count;
             try {
+                //URL url = new URL("https://cdn.discordapp.com/attachments/610043461122523138/1046794890807365832/app-debug.apk");
                 URL url = new URL(f_url[0]);
                 URLConnection connection = url.openConnection();
                 connection.connect();
@@ -97,10 +106,9 @@ public class UpdateDialogFragment extends DialogFragment {
 
                 InputStream input = new BufferedInputStream(url.openStream(),
                         8192);
+                File downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
 
-                OutputStream output = new FileOutputStream(Environment
-                        .getExternalStorageDirectory().toString()
-                        + "/ext.apk");
+                OutputStream output = new FileOutputStream(downloads  + "//ext.apk");
 
                 byte[] data = new byte[1024];
 
@@ -113,12 +121,11 @@ public class UpdateDialogFragment extends DialogFragment {
                 }
 
                 output.flush();
-
                 output.close();
                 input.close();
 
             } catch (Exception e) {
-                Log.e("Error: ", e.getMessage());
+                Log.e("Error: ", e.toString());
             }
 
             return null;
@@ -130,10 +137,17 @@ public class UpdateDialogFragment extends DialogFragment {
 
         @Override
         protected void onPostExecute(String file_url) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            Uri uri = Uri.fromFile(new File(file_url));
+
+            File downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            File file1 = new File (downloads + "//ext.apk");
+
+            Uri uri = getUriForFile(activityContext, BuildConfig.APPLICATION_ID, file1);
+
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
             intent.setDataAndType(uri, "application/vnd.android.package-archive");
-            startActivity(intent);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            activityContext.startActivity(intent);
+
             MainActivity.preferencesUtil.createAppVersionCode(PreferencesUtil.aboutNewVersion.get(3));
             pDialog.dismiss();
 

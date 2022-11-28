@@ -69,13 +69,12 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
         HandlerCheckAllAccess.post(CheckAllAccess);
         isHomeWorkSet = true;
-        try {
 
+        try {
             setUI();
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         return root;
 
     }
@@ -83,7 +82,6 @@ public class HomeFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setUI() throws ParseException {
         if (binding != null) {
-
             HorizontalScrollView horizontalScrollView = binding.scrollViewHorizontalLastNotes;
             horizontalScrollView.setHorizontalScrollBarEnabled(false);
             ScrollView scrollView = binding.scrollViewHome;
@@ -118,7 +116,7 @@ public class HomeFragment extends Fragment {
             if (PreferencesUtil.aboutNewVersion != null){
                 if (Boolean.parseBoolean(PreferencesUtil.aboutNewVersion.get(0))){
                     PreferencesUtil.aboutNewVersion.set(0, "False");
-                    UpdateDialogFragment newFragment = new UpdateDialogFragment();
+                    UpdateDialogFragment newFragment = new UpdateDialogFragment(getContext());
                     newFragment.show(getChildFragmentManager().beginTransaction(), "update");
                 }
             }
@@ -307,7 +305,7 @@ public class HomeFragment extends Fragment {
         }
 
 
-        for (int i = 0; i < listOfIntervals.size(); i++) {
+        for (int i = 0; i < curr_day_map.get(dayOfTheWeek).size()-1; i++) {
             if (listOfIntervals.get(i) != null || listOfIntervals.size() != 0){
                 ArrayList<String> arr = listOfIntervals.get(i);
 
@@ -330,7 +328,7 @@ public class HomeFragment extends Fragment {
                                 listOfIntervals.get(i).get(0) +
                                 " до " +
                                 listOfIntervals.get(i).get(1));
-                    } else if (date_current.after(date_end) && date_current.after(date_begin_next)){
+                    } else if (date_current.after(date_end) && date_current.before(date_begin_next)){
                         currentTV.setText("(П)" +
                                 curr_day_map.get(dayOfTheWeek).get(i+1) +
                                 " в " +
